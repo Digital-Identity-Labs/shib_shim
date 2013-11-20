@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="shib_shim:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="shib_shim.war">
+      <element id="artifact" artifact-name="shib_shim:war exploded" />
+    </root>
+  </artifact>
+</component>
