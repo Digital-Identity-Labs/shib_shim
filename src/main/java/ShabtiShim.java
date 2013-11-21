@@ -5,16 +5,19 @@ import java.util.UUID;
 
 
 
-public class ShibShim extends HttpServlet {
+public class ShabtiShim extends HttpServlet {
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response)
             throws ServletException, IOException {
 
         String uuid = UUID.randomUUID().toString();
-        //System.out.println("uuid = " + uuid);
+
+        String token = request.getPathInfo();
 
         PrintWriter out = response.getWriter();
-        out.println( "Hello World!" );
+        out.println( "Hello!" );
+        out.println( uuid );
+        out.println( token );
         out.flush();
         out.close();
     }
