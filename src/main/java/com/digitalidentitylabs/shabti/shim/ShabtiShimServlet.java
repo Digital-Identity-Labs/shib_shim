@@ -3,19 +3,11 @@ package com.digitalidentitylabs.shabti.shim;
 import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.json.simple.JSONValue;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class ShabtiShimServlet extends HttpServlet {
 
@@ -25,7 +17,7 @@ public class ShabtiShimServlet extends HttpServlet {
     // Path to return to the main authentication service, after user interaction
     private static String incomingPath = "/AuthnEngine";
 
-    // Path to go to in a huff in an invalid demand is returned by secondary external auth
+    // Path to go to in a huff in an invalid data is returned by secondary external auth
     private static String failPath = "/500";
 
     // Redis host
@@ -84,35 +76,34 @@ public class ShabtiShimServlet extends HttpServlet {
         // No token in path means we need to create one and redirect to external authenticator
         if ( token.isEmpty() ) {
 
-            writeDemand(request);
+            ShabtiShimDemand demand = new ShabtiShimDemand(request);
+            writeDemand(demand);
 
             logger.debug("Outgoing! (redirecting out)");
+
+            // Redirect browser to the secondary external authenticator
             response.sendRedirect(outgoingPath);
 
         }
 
-        // A token, so we should check it returns valid authenticated data
+        // We have a token, so we should check it returns valid authenticated data
         else {
 
-            JSONObject demand = readDemand(token);
+            ShabtiShimDemand demand = readDemand(token);
 
-            if ( isValidAuthenticatedDemand(demand) ) {
+            if ( demand.isValidAuthenticatedDemand() ) {
 
-                // Update request with data from the demand
-                request.setAttribute("principal_name", demand.get("principal"));
-                request.setAttribute("forceAuthn",     demand.get("force"));
-                request.setAttribute("isPassive",      demand.get("passive"));
-                request.setAttribute("authnMethod",    demand.get("method"));
-                request.setAttribute("relyingParty",   demand.get("relying_party"));
+                // Pass data back into request for authEngine to use
+                informTheService(request, demand);
 
                 // Forward (rather than redirect) to pass control directly to the Shibboleth authEngine with same context
                 RequestDispatcher dispatcher = getServletContext().getRequestDispatcher(incomingPath);
-                dispatcher.forward(request, response);
+                dispatcher.forward(request, response);      // Fixme: Fold this up into a method?
 
             } else {
 
                 // It's all gone wrong, I've had enough of this, etc. Deal with it elsewhere.
-                response.sendRedirect(failPath);
+                response.sendRedirect(failPath); // Fixme: Add error logging here too.
 
             }
 
@@ -120,17 +111,16 @@ public class ShabtiShimServlet extends HttpServlet {
 
     }
 
-    private Boolean isValidAuthenticatedDemand(JSONObject demand) {
+    private boolean informTheService(HttpServletRequest request, ShabtiShimDemand demand) {
 
-         logger.info("Validating");
+        // Update request with data from the data
+        request.setAttribute("principal_name", demand.get("principal"));
+        request.setAttribute("forceAuthn",     demand.get("force"));
+        request.setAttribute("isPassive",      demand.get("passive"));
+        request.setAttribute("authnMethod",    demand.get("method"));
+        request.setAttribute("relyingParty",   demand.get("relying_party"));
 
-         if (demand == null) {
-             return false;
-         }
-
-
-
-         return true;
+        return true;
 
     }
 
@@ -146,40 +136,7 @@ public class ShabtiShimServlet extends HttpServlet {
         return token;
     }
 
-    @SuppressWarnings("unchecked")
-    private void writeDemand(HttpServletRequest request) {
-
-        // Need a better source of random uniqueness than this, I think...
-        String uuid  = UUID.randomUUID().toString();
-        String token = DigestUtils.md5Hex(uuid);
-
-        JSONObject demand = new JSONObject();
-
-        // Core attributes
-        demand.put("forceAuthn",   request.getAttribute("forceAuthn")   );
-        demand.put("isPassive",    request.getAttribute("isPassive")    );
-        demand.put("authnMethod",  request.getAttribute("authnMethod")  );
-        demand.put("relyingParty", request.getAttribute("relyingParty") );
-
-        // Copy of the token (this is also the key when stored)
-        demand.put("token", token);
-
-        // Metadata
-        demand.put("created_at", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-
-        // User agent verification data
-        demand.put("user_address", request.getRemoteAddr() );
-        demand.put("agent_hash",   DigestUtils.md5Hex(request.getHeader("User-Agent")));
-
-        // Service information
-        demand.put("site_domain",  request.getServerName() );
-        demand.put("server_tag",   "indiid"                );
-        demand.put("component",    "core"                  );
-        demand.put("protocol",     "shibboleth"            );
-        demand.put("version",      shimVersion             );
-
-        // A bit of glue info
-        demand.put("return_url",   request.getRequestURL() );
+    private void writeDemand(ShabtiShimDemand demand) {
 
         String exportedDemand = demand.toJSONString();
 
@@ -190,14 +147,14 @@ public class ShabtiShimServlet extends HttpServlet {
 
         try {
             redis = redisPool.getResource();
-            redis.set(token, exportedDemand);
+            redis.set(demand.token, exportedDemand);
         } finally {
             redisPool.returnResource(redis);
         }
 
     }
 
-    private JSONObject readDemand(String token) {
+    private ShabtiShimDemand readDemand(String token) {
 
         logger.info("Reading...");
 
@@ -218,23 +175,17 @@ public class ShabtiShimServlet extends HttpServlet {
 
         }
 
-        // Check if anything was found. If not, return null (assuming that's the correct thing to do...)
+        // Check if anything was found. If not, return empty demand
         if (importedDemand == null) {
 
-            return null;
+            return new ShabtiShimDemand();
 
         }
 
         // Convert recovered string into a JSON-aware HashMap
+        ShabtiShimDemand demand = new ShabtiShimDemand(importedDemand);
 
-            logger.info("MONKEY");
-            logger.info(importedDemand);
-
-            Object obj= JSONValue.parse(importedDemand);
-            JSONObject demand=(JSONObject)obj;
-
-
-            return demand;
+        return demand;
 
     }
 
