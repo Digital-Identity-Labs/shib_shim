@@ -59,7 +59,7 @@
 
     <build>
         <finalName>shabti-shim-libs</finalName>
-        <!--
+
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -81,7 +81,7 @@
                     </execution>
                 </executions>
             </plugin>
-        </plugins> -->
+        </plugins>
     </build>
 
 </project>
