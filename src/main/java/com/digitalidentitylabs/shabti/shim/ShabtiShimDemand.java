@@ -9,19 +9,16 @@ import org.json.simple.JSONValue;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * Created with IntelliJ IDEA.
- * User: pete
- * Date: 24/11/2013
- * Time: 14:34
- * To change this template use File | Settings | File Templates.
- */
-public class ShabtiShimDemand {
+class ShabtiShimDemand {
 
-    protected JSONObject data;
+    private JSONObject   data;
     public    String     token;
+    public    String     validationMessage = "";
 
-    // Create an empty possibly pointless object
+    // Internal protocol revision
+    private static int shimModelVersion = 1;
+
+    // Create an empty, possibly pointless, object
     public ShabtiShimDemand() {
 
          data = new JSONObject();
@@ -74,12 +71,13 @@ public class ShabtiShimDemand {
         this.data.put("server_tag",   "indiid"                );
         this.data.put("component",    "core"                  );
         this.data.put("protocol",     "shibboleth"            );
-        this.data.put("version",      1                       ); // FIXME: Needs to be elsewhere, surely?
+        this.data.put("version",      shimModelVersion        );
 
-        // A bit of glue info
-        this.data.put("return_url",   request.getRequestURL() );
+        // A bit of glue info so the secondary auth can redirect back to here
+        this.data.put("return_url",   request.getRequestURL().toString() ); // JSON parser seems to choke without .toString...
 
-
+        // Make sure the principal is empty.
+        this.data.put("principal",   null );
     }
 
     public Object get(String attrib) {
@@ -102,7 +100,38 @@ public class ShabtiShimDemand {
             return false;
         }
 
-        return false;
+        // Must have a valid and appropriate date (redundant?)
+        // ...
+
+
+        // Must have a token
+        if (get("token") == null || get("token").toString().isEmpty()) {
+            return false;
+        }
+
+        // Must have a supported serialisation version
+        if (Integer.valueOf(get("version").toString()) > shimModelVersion ) {
+           return false;
+        }
+
+        // Must be a Shibboleth demand
+        if (get("protocol").toString() != "shibboleth") {
+            return false;
+        }
+
+        // Must have a username!
+        if (get("principal") == null || get("principal").toString().isEmpty()) {
+            return false;
+        }
+
+        // Can't find any other faults, so probably OK.
+        return true;
+
+    }
+
+    public String getValidationMessage() {
+
+        return "There have been errors";
 
     }
 }
