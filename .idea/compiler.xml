@@ -22,7 +22,9 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
-        <module name="shib_shim" />
+        <module name="shabti-shim-lib" />
+        <module name="shabti-shim-libs" />
+        <module name="shabti-shim-war" />
       </profile>
     </annotationProcessing>
   </component>

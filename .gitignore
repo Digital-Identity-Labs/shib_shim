@@ -12,3 +12,7 @@
 /target/shib_shim/
 
 /target/
+
+/shabti-shim-libs/target/
+
+/shabti-shim-war/target/

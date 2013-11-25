@@ -1,0 +1,20 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="shabti-shim-lib:war exploded">
+    <output-path>$PROJECT_DIR$/shabti-shim-lib/target/shabti-shim-libs</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="shabti-shim-libs/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="shabti-shim-libs" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="Maven: redis.clients:jedis:2.2.1" />
+          <element id="library" level="project" name="Maven: commons-pool:commons-pool:1.6" />
+          <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.5" />
+          <element id="library" level="project" name="Maven: commons-codec:commons-codec:1.2" />
+          <element id="library" level="project" name="Maven: com.googlecode.json-simple:json-simple:1.1.1" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>
