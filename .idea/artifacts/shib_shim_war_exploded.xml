@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="exploded-war" name="shib_shim:war exploded">
-    <output-path>$PROJECT_DIR$/target/shib_shim</output-path>
+    <output-path>$PROJECT_DIR$/target/shabti-shim</output-path>
     <root id="root">
       <element id="javaee-facet-resources" facet="shib_shim/web/Web" />
       <element id="directory" name="WEB-INF">
