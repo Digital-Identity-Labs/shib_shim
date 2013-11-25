@@ -5,9 +5,6 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
 
 public class ShabtiShimServlet extends HttpServlet {
 
@@ -30,10 +27,8 @@ public class ShabtiShimServlet extends HttpServlet {
     private static final  Logger logger = LoggerFactory.getLogger("ShabtiShim");
 
     // Redis Pool that will, I think, be threadsafe...
-    private static JedisPool redisPool = null;
+    private static ShabtiShimStorage storage = null;
 
-    // Redis Pool that will, I think, be threadsafe...
-    private static int shimVersion = 1;
 
     // Use default values or load values from web.xml
     public void init(ServletConfig config) throws ServletException {
@@ -54,15 +49,13 @@ public class ShabtiShimServlet extends HttpServlet {
                 redisPort : Integer.parseInt(config.getInitParameter("redisPort"));
 
 
-
-
-        redisPool = new JedisPool(new JedisPoolConfig(), redisHost, redisPort);
+        storage = new ShabtiShimStorage(redisHost, redisPort);
 
     }
 
     public void destroy() {
 
-        redisPool.destroy();
+        storage.destroy();
 
     }
 
@@ -76,13 +69,11 @@ public class ShabtiShimServlet extends HttpServlet {
         // No token in path means we need to create one and redirect to external authenticator
         if ( token.isEmpty() ) {
 
-            ShabtiShimDemand demand = new ShabtiShimDemand(request);
-            writeDemand(demand);
-
-            logger.debug("Outgoing! (redirecting out)");
+            // Build and store a new demand using context data in the request
+            ShabtiShimDemand demand = createOutgoingDemand(request);
 
             // Redirect browser to the secondary external authenticator
-            response.sendRedirect(outgoingPath);
+            response.sendRedirect(outgoingPath + demand.token);
 
         }
 
@@ -94,13 +85,16 @@ public class ShabtiShimServlet extends HttpServlet {
             if ( demand.isValidAuthenticatedDemand() ) {
 
                 // Pass data back into request for authEngine to use
+                handleGoodIncomingDemand(demand);
                 informTheService(request, demand);
 
                 // Forward (rather than redirect) to pass control directly to the Shibboleth authEngine with same context
                 RequestDispatcher dispatcher = getServletContext().getRequestDispatcher(incomingPath);
-                dispatcher.forward(request, response);      // Fixme: Fold this up into a method?
+                dispatcher.forward(request, response);
 
             } else {
+
+                handleBadIncomingDemand(demand);
 
                 // It's all gone wrong, I've had enough of this, etc. Deal with it elsewhere.
                 response.sendRedirect(failPath); // Fixme: Add error logging here too.
@@ -109,6 +103,37 @@ public class ShabtiShimServlet extends HttpServlet {
 
         }
 
+    }
+
+
+    private ShabtiShimDemand createOutgoingDemand(HttpServletRequest request) {
+
+        ShabtiShimDemand demand = new ShabtiShimDemand(request);
+        writeDemand(demand);
+
+        logger.debug("Outgoing! (redirecting out)");
+
+        return demand;
+
+    }
+
+    private void handleGoodIncomingDemand(ShabtiShimDemand demand) {
+
+        logger.info(String.format("Received valid authenticated demand for token %s", demand.token));
+        storage.delete(demand.token);
+
+    }
+
+    private void handleBadIncomingDemand(ShabtiShimDemand demand) {
+
+        logger.warn(String.format("Received invalid authenticated demand for token %s", demand.token));
+        //logger.warn(demand.errorMessage());
+
+        if (demand != null && demand.token != null && ! demand.token.isEmpty()) {
+
+            storage.delete(demand.token);
+
+        }
     }
 
     private boolean informTheService(HttpServletRequest request, ShabtiShimDemand demand) {
@@ -143,14 +168,7 @@ public class ShabtiShimServlet extends HttpServlet {
         logger.info("Storing...");
         logger.info(exportedDemand);
 
-        Jedis redis = null;
-
-        try {
-            redis = redisPool.getResource();
-            redis.set(demand.token, exportedDemand);
-        } finally {
-            redisPool.returnResource(redis);
-        }
+        storage.write(demand.token, exportedDemand);
 
     }
 
@@ -158,31 +176,8 @@ public class ShabtiShimServlet extends HttpServlet {
 
         logger.info("Reading...");
 
-        // Scoping on try?
-        Jedis redis = null;
-        String importedDemand = null;
+        String importedDemand = storage.read(token);
 
-        try {
-
-            redis = redisPool.getResource();
-            importedDemand = redis.get(token);
-
-            logger.info(importedDemand);
-
-        } finally {
-
-            redisPool.returnResource(redis);
-
-        }
-
-        // Check if anything was found. If not, return empty demand
-        if (importedDemand == null) {
-
-            return new ShabtiShimDemand();
-
-        }
-
-        // Convert recovered string into a JSON-aware HashMap
         ShabtiShimDemand demand = new ShabtiShimDemand(importedDemand);
 
         return demand;
