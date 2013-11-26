@@ -6,6 +6,13 @@ import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 public class ShabtiShimServlet extends HttpServlet {
 
     // Path to reach the secondary external authentication service, before user interaction
@@ -29,6 +36,9 @@ public class ShabtiShimServlet extends HttpServlet {
     // Redis Pool that will, I think, be threadsafe...
     private static ShabtiShimStorage storage = null;
 
+
+    static private DateTimeFormatter javascriptDateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z");
+    static private ObjectMapper mapper;
 
     // Use default values or load values from web.xml
     public void init(ServletConfig config) throws ServletException {
@@ -139,11 +149,11 @@ public class ShabtiShimServlet extends HttpServlet {
     private boolean informTheService(HttpServletRequest request, ShabtiShimDemand demand) {
 
         // Update request with data from the data
-        request.setAttribute("principal_name", demand.get("principal"));
-        request.setAttribute("forceAuthn",     demand.get("force"));
-        request.setAttribute("isPassive",      demand.get("passive"));
-        request.setAttribute("authnMethod",    demand.get("method"));
-        request.setAttribute("relyingParty",   demand.get("relying_party"));
+        request.setAttribute("principal_name", demand.principal);
+        request.setAttribute("forceAuthn",     demand.forceAuthn );
+        request.setAttribute("isPassive",      demand.isPassive);
+        request.setAttribute("authnMethod",    demand.authnMethod);
+        request.setAttribute("relyingParty",   demand.relyingParty);
 
         return true;
 
@@ -163,9 +173,14 @@ public class ShabtiShimServlet extends HttpServlet {
 
     private void writeDemand(ShabtiShimDemand demand) {
 
-        String exportedDemand = demand.toJSONString();
+        String exportedDemand = null;
+        try {
+            exportedDemand = mapper.writeValueAsString(demand);
+        } catch (JsonProcessingException e) {
+            logger.error(String.format("Failed to write demand for token %s!", demand.token), e);
+        }
 
-        logger.info("Storing...");
+        logger.info("!Storing...");
         logger.info(exportedDemand);
 
         storage.write(demand.token, exportedDemand);
@@ -174,11 +189,16 @@ public class ShabtiShimServlet extends HttpServlet {
 
     private ShabtiShimDemand readDemand(String token) {
 
-        logger.info("Reading...");
+        logger.info("!Reading...");
 
         String importedDemand = storage.read(token);
 
-        ShabtiShimDemand demand = new ShabtiShimDemand(importedDemand);
+        ShabtiShimDemand demand = null;
+        try {
+            demand = mapper.readValue(importedDemand, ShabtiShimDemand.class);
+        } catch (IOException e) {
+            logger.error(String.format("Failed to read demand for token %s!", demand.token), e);
+        }
 
         return demand;
 

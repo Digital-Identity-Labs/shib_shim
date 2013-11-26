@@ -3,124 +3,105 @@ package com.digitalidentitylabs.shabti.shim;
 import java.util.UUID;
 import javax.servlet.http.*;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
+import org.joda.time.DateTime;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
-class ShabtiShimDemand {
-
-    private JSONObject   data;
-    public    String     token;
-    public    String     validationMessage = "";
+public class ShabtiShimDemand {
 
     // Internal protocol revision
     private static int shimModelVersion = 1;
 
-    // Create an empty, possibly pointless, object
-    public ShabtiShimDemand() {
+    public String token = null;
 
-         data = new JSONObject();
-    }
+    // Core Shibboleth authentication context stuff
+    protected Boolean forceAuthn   = false;
+    protected Boolean isPassive    = false;
+    protected String  authnMethod;
+    protected String  relyingParty;
 
-    // Build object from raw JSON
-    public ShabtiShimDemand(String rawJSON) {
+    // Metadata
+    protected DateTime createdAt;
 
-        this.data = new JSONObject();
+    // User agent verification data
+    protected String userAddress;
+    protected String agentHash;
 
-        Object obj= JSONValue.parse(rawJSON);
-        JSONObject possibleDemand=(JSONObject)obj;
+    // Service information
+    protected String siteDomain;
+    protected String serverTag;
+    protected String component;
+    protected String protocol;
+    protected int    version;
 
-        if (possibleDemand != null) {
+    // A bit of glue info so the secondary auth can redirect back to here
+    protected String returnURL;
 
-          this.data = possibleDemand;
+    // Make sure the principal is empty.
+    protected String principal;
 
-        }
+    // Status
+    public    String validationMessage = "";
 
-    }
 
     // Build new object from request
-    @SuppressWarnings("unchecked")
     public ShabtiShimDemand(HttpServletRequest request) {
-
-        this.data = new JSONObject();
 
         // Need a better source of random uniqueness than this, I think...
         String uuid  = UUID.randomUUID().toString();
-        token = DigestUtils.md5Hex(uuid);
+        this.token = DigestUtils.md5Hex(uuid);
 
         // Core attributes
-        this.data.put("forceAuthn",   request.getAttribute("forceAuthn")   );
-        this.data.put("isPassive",    request.getAttribute("isPassive")    );
-        this.data.put("authnMethod",  request.getAttribute("authnMethod")  );
-        this.data.put("relyingParty", request.getAttribute("relyingParty") );
-
-        // Copy of the token (this is also the key when stored)
-        this.data.put("token", token);
+        forceAuthn   = (Boolean) request.getAttribute("forceAuthn");
+        isPassive    = (Boolean) request.getAttribute("isPassive");
+        authnMethod  = request.getAttribute("authnMethod")  == null ? null :  request.getAttribute("authnMethod").toString();
+        relyingParty = request.getAttribute("relyingParty") == null ? null :  request.getAttribute("relyingParty").toString();
 
         // Metadata
-        this.data.put("created_at", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        createdAt =  new DateTime(); //.toString(javascriptDateFormat);
 
         // User agent verification data
-        this.data.put("user_address", request.getRemoteAddr() );
-        this.data.put("agent_hash",   DigestUtils.md5Hex(request.getHeader("User-Agent")));
+        userAddress = request.getRemoteAddr();
+        agentHash   = DigestUtils.md5Hex(request.getHeader("User-Agent"));
 
         // Service information
-        this.data.put("site_domain",  request.getServerName() );
-        this.data.put("server_tag",   "indiid"                );
-        this.data.put("component",    "core"                  );
-        this.data.put("protocol",     "shibboleth"            );
-        this.data.put("version",      shimModelVersion        );
+        siteDomain = request.getServerName();
+        serverTag   = "indiid";
+        component   = "core";
+        protocol    = "shibboleth";
+        version     = shimModelVersion;
 
         // A bit of glue info so the secondary auth can redirect back to here
-        this.data.put("return_url",   request.getRequestURL().toString() ); // JSON parser seems to choke without .toString...
+        returnURL    = request.getRequestURL().toString(); // JSON parser seems to choke without .toString...
 
         // Make sure the principal is empty.
-        this.data.put("principal",   null );
-    }
+        principal  = null;
 
-    public Object get(String attrib) {
-
-        return this.data.get(attrib);
-
-    }
-
-    // Returns a JSON string representation of the data
-    public String toJSONString(){
-
-       return this.data.toJSONString();
 
     }
 
     public boolean isValidAuthenticatedDemand() {
-
-        // Check for an empty hashmap - null object equivalent
-        if (this.data.isEmpty()) {
-            return false;
-        }
 
         // Must have a valid and appropriate date (redundant?)
         // ...
 
 
         // Must have a token
-        if (get("token") == null || get("token").toString().isEmpty()) {
+        if (this.token == null || this.token.isEmpty()) {
             return false;
         }
 
         // Must have a supported serialisation version
-        if (Integer.valueOf(get("version").toString()) > shimModelVersion ) {
-           return false;
+        if (version > shimModelVersion ) {
+            return false;
         }
 
         // Must be a Shibboleth demand
-        if (get("protocol").toString() != "shibboleth") {
+        if (! this.protocol.equals("shibboleth")) {
             return false;
         }
 
         // Must have a username!
-        if (get("principal") == null || get("principal").toString().isEmpty()) {
+        if (this.principal == null || this.principal.isEmpty()) {
             return false;
         }
 
@@ -134,4 +115,6 @@ class ShabtiShimDemand {
         return "There have been errors";
 
     }
+
+
 }
