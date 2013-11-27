@@ -2,44 +2,51 @@ package com.digitalidentitylabs.shabti.shim;
 
 import java.util.UUID;
 import javax.servlet.http.*;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.joda.time.DateTime;
 
-
+@JsonAutoDetect(fieldVisibility= JsonAutoDetect.Visibility.NONE)
+@JsonIgnoreProperties({ "validAuthenticatedDemand" })
 public class ShabtiShimDemand {
 
     // Internal protocol revision
     private static int shimModelVersion = 1;
 
-    public String token = null;
+    @JsonProperty("token") public String token = null;
 
     // Core Shibboleth authentication context stuff
-    protected Boolean forceAuthn   = false;
-    protected Boolean isPassive    = false;
-    protected String  authnMethod;
-    protected String  relyingParty;
+    @JsonProperty("force")         protected Boolean forceAuthn   = false;
+    @JsonProperty("passive")       protected Boolean isPassive    = false;
+    @JsonProperty("method")        protected String  authnMethod;
+    @JsonProperty("relying_party") protected String  relyingParty;
 
     // Metadata
-    protected DateTime createdAt;
+    @JsonProperty("created_at")   protected DateTime createdAt;
 
     // User agent verification data
-    protected String userAddress;
-    protected String agentHash;
+    @JsonProperty("user_address") protected String userAddress;
+    @JsonProperty("agent_hash")   protected String agentHash;
 
     // Service information
-    protected String siteDomain;
-    protected String serverTag;
-    protected String component;
-    protected String protocol;
-    protected int    version;
+    @JsonProperty("site_domain") protected String siteDomain;
+    @JsonProperty("server_tag")  protected String serverTag;
+    @JsonProperty("component")   protected String component;
+    @JsonProperty("protocol")    protected String protocol;
+    @JsonProperty("version")     protected int    version;
 
     // A bit of glue info so the secondary auth can redirect back to here
-    protected String returnURL;
+    @JsonProperty("return_url") protected String returnURL;
 
     // Make sure the principal is empty.
-    protected String principal;
+    @JsonProperty("principal")  protected String principal;
 
     // Status
+    @JsonIgnore
     public    String validationMessage = "";
 
 
@@ -51,8 +58,8 @@ public class ShabtiShimDemand {
         this.token = DigestUtils.md5Hex(uuid);
 
         // Core attributes
-        forceAuthn   = (Boolean) request.getAttribute("forceAuthn");
-        isPassive    = (Boolean) request.getAttribute("isPassive");
+        forceAuthn   = request.getAttribute("forceAuthn") == null ? false : (Boolean) request.getAttribute("forceAuthn");
+        isPassive    = request.getAttribute("isPassive")  == null ? false : (Boolean)request.getAttribute("isPassive");
         authnMethod  = request.getAttribute("authnMethod")  == null ? null :  request.getAttribute("authnMethod").toString();
         relyingParty = request.getAttribute("relyingParty") == null ? null :  request.getAttribute("relyingParty").toString();
 
@@ -112,7 +119,7 @@ public class ShabtiShimDemand {
 
     public String getValidationMessage() {
 
-        return "There have been errors";
+        return validationMessage;
 
     }
 

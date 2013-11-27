@@ -37,8 +37,8 @@ public class ShabtiShimServlet extends HttpServlet {
     private static ShabtiShimStorage storage = null;
 
 
-    static private DateTimeFormatter javascriptDateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z");
-    static private ObjectMapper mapper;
+    private static DateTimeFormatter javascriptDateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z");
+    private static ObjectMapper mapper = null;
 
     // Use default values or load values from web.xml
     public void init(ServletConfig config) throws ServletException {
@@ -60,6 +60,10 @@ public class ShabtiShimServlet extends HttpServlet {
 
 
         storage = new ShabtiShimStorage(redisHost, redisPort);
+
+        mapper = new ObjectMapper();
+        mapper.registerModule(new JodaModule());
+        mapper.configure(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS , false);
 
     }
 
@@ -119,6 +123,9 @@ public class ShabtiShimServlet extends HttpServlet {
     private ShabtiShimDemand createOutgoingDemand(HttpServletRequest request) {
 
         ShabtiShimDemand demand = new ShabtiShimDemand(request);
+
+        logger.info(demand.token);
+
         writeDemand(demand);
 
         logger.debug("Outgoing! (redirecting out)");
@@ -175,6 +182,7 @@ public class ShabtiShimServlet extends HttpServlet {
 
         String exportedDemand = null;
         try {
+            logger.info(demand.token);
             exportedDemand = mapper.writeValueAsString(demand);
         } catch (JsonProcessingException e) {
             logger.error(String.format("Failed to write demand for token %s!", demand.token), e);
@@ -186,6 +194,7 @@ public class ShabtiShimServlet extends HttpServlet {
         storage.write(demand.token, exportedDemand);
 
     }
+
 
     private ShabtiShimDemand readDemand(String token) {
 
