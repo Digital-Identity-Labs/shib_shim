@@ -58,10 +58,10 @@ public class ShabtiShimDemand {
         this.token = DigestUtils.md5Hex(uuid);
 
         // Core attributes
-        forceAuthn   = request.getAttribute("forceAuthn") == null ? false : (Boolean) request.getAttribute("forceAuthn");
-        isPassive    = request.getAttribute("isPassive")  == null ? false : (Boolean)request.getAttribute("isPassive");
-        authnMethod  = request.getAttribute("authnMethod")  == null ? null :  request.getAttribute("authnMethod").toString();
-        relyingParty = request.getAttribute("relyingParty") == null ? null :  request.getAttribute("relyingParty").toString();
+        forceAuthn   = request.getAttribute("forceAuthn")   == null ? false : (Boolean) request.getAttribute("forceAuthn");
+        isPassive    = request.getAttribute("isPassive")    == null ? false : (Boolean) request.getAttribute("isPassive");
+        authnMethod  = request.getAttribute("authnMethod")  == null ? null  : request.getAttribute("authnMethod").toString();
+        relyingParty = request.getAttribute("relyingParty") == null ? null  : request.getAttribute("relyingParty").toString();
 
         // Metadata
         createdAt =  new DateTime(); //.toString(javascriptDateFormat);

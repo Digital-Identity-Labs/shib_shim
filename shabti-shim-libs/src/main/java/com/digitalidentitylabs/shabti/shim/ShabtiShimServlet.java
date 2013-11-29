@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
-import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -157,7 +156,7 @@ public class ShabtiShimServlet extends HttpServlet {
 
         // Update request with data from the data
         request.setAttribute("principal_name", demand.principal);
-        request.setAttribute("forceAuthn",     demand.forceAuthn );
+        request.setAttribute("forceAuthn",     demand.forceAuthn);
         request.setAttribute("isPassive",      demand.isPassive);
         request.setAttribute("authnMethod",    demand.authnMethod);
         request.setAttribute("relyingParty",   demand.relyingParty);
