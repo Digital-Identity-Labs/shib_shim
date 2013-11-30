@@ -3,6 +3,7 @@ package com.digitalidentitylabs.shabti.shim;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,12 +13,17 @@ import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.codec.digest.DigestUtils;
 
 public class ShabtiShimDemandTest {
 
     private HttpServletRequest req;
-
+    private ServletConfig config;
 
     @org.junit.Before
     public void setUp() throws Exception {
@@ -32,6 +38,9 @@ public class ShabtiShimDemandTest {
         when(req.getHeader("User-Agent")).thenReturn("It's only a model");
         when(req.getServerName()).thenReturn("example.com");
         when(req.getRequestURL()).thenReturn(new StringBuffer("https://service.example.com/servlet/"));
+
+
+        this.config = mock(ServletConfig.class);
 
 
     }
@@ -144,119 +153,149 @@ public class ShabtiShimDemandTest {
 
     }
 
-               /*
-
     @org.junit.Test
     public void demandShowsCreationTime() {
 
-        assertThat(  );
+        ShabtiShimDemand demand = new ShabtiShimDemand(req);
+        DateTime timeNow = new DateTime();
+        assertThat( demand.getCreatedAt().minuteOfDay(), equalTo(timeNow.minuteOfDay()) ); // FIX: This is not very good, really.
 
     }
 
     @org.junit.Test
     public void demandShowsUserAddress() {
 
-        assertThat(  );
+        String address = "10.180.15.4";
+        when(req.getRemoteAddr()).thenReturn(address);
+        ShabtiShimDemand demand = new ShabtiShimDemand(req);
+
+        assertThat( demand.getUserAddress(), equalTo(address) );
 
     }
 
     @org.junit.Test
     public void demandShowsAgentHash() {
 
-        assertThat(  );
+        String agentString = "IBrowse/2.3 (AmigaOS 3.9)";
+        String agentHash   = DigestUtils.md5Hex(agentString);
+        when(req.getHeader("User-Agent")).thenReturn(agentString);
+        ShabtiShimDemand demand = new ShabtiShimDemand(req);
+
+        assertThat( demand.getAgentHash(), equalTo(agentHash) );
 
     }
+
 
     @org.junit.Test
     public void demandShowsServiceSiteDomain() {
 
-        assertThat(  );
+        String domain = "worldofpossums.net";
 
-    }
+        when(req.getServerName()).thenReturn(domain);
+        ShabtiShimDemand demand = new ShabtiShimDemand(req);
 
-    @org.junit.Test
-    public void demandShowsServerTag() {
-
-        assertThat(  );
-
-
-    }
-
-    @org.junit.Test
-    public void demandShowsProtocol() {
-
-        assertThat(  );
-
-    }
-
-    @org.junit.Test
-    public void demandShowsComponent() {
-
-        assertThat(  );
-
-    }
-
-    @org.junit.Test
-    public void demandShowsVersion() {
-
-        assertThat(  );
+        assertThat( demand.getSiteDomain(), equalTo(domain) );
 
     }
 
     @org.junit.Test
     public void demandShowsLatestVersion() {
 
-        assertThat(  );
+        int version = 1;
+
+        ShabtiShimDemand demand = new ShabtiShimDemand(req);
+
+        assertThat( demand.getVersion(), equalTo(version) );
 
     }
 
     @org.junit.Test
     public void demandShowsReturnURL() {
 
-        assertThat(  );
+        String servletURL = "https://sp.example.com/shim/";
+        when(req.getRequestURL()).thenReturn(new StringBuffer(servletURL));
+        ShabtiShimDemand demand = new ShabtiShimDemand(req);
+
+        assertThat( demand.getReturnURL(), equalTo(servletURL) );
 
     }
 
     @org.junit.Test
     public void demandDoesNotShowPrincipalBeforeAuthention() {
 
-        assertThat(  );
+        ShabtiShimDemand demand = new ShabtiShimDemand(req);
+        assertThat( demand.getPrincipal(), is(nullValue()) );
 
     }
 
     @org.junit.Test
     public void demandIsNotValidAuthenticated() {
 
-        assertThat(  );
+        ShabtiShimDemand demand = new ShabtiShimDemand(req);
+        assertFalse( demand.isValidAuthenticatedDemand() );
 
     }
 
     @org.junit.Test
-    public void demandIsN() {
+    public void demandShowsServerTagDefault() {
 
-        assertThat(  );
+        ShabtiShimDemand demand = new ShabtiShimDemand(req);
 
-    }
-    @org.junit.Test
-    public void x() {
+        assertThat( demand.getServerTag(), equalTo("service") );
 
-        assertThat(  );
 
     }
+
 
     @org.junit.Test
-    public void x() {
+    public void demandShowsProtocolDefault() {
 
-        assertThat(  );
+        ShabtiShimDemand demand = new ShabtiShimDemand(req);
+
+        assertThat( demand.getProtocol(), equalTo("shibboleth") );
 
     }
+
 
     @org.junit.Test
-    public void x() {
+    public void demandShowsComponentDefault() {
+
+        ShabtiShimDemand demand = new ShabtiShimDemand(req);
+
+        assertThat( demand.getComponent(), equalTo("core") );
+
+    }
+
+     /*
+
+
+
+    @org.junit.Test
+    public void demandShowsServerTagFromParams() {
+
+        assertThat(  );
+
+
+    }
+
+
+
+    @org.junit.Test
+    public void demandShowsProtocolFromParams() {
 
         assertThat(  );
 
     }
+
+
+    @org.junit.Test
+    public void demandShowsComponentFromParams() {
+
+        assertThat(  );
+
+    }
+
+
 
 
      */

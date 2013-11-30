@@ -86,7 +86,7 @@ public class ShabtiShimServlet extends HttpServlet {
             ShabtiShimDemand demand = createOutgoingDemand(request);
 
             // Redirect browser to the secondary external authenticator
-            response.sendRedirect(outgoingPath + demand.token);
+            response.sendRedirect(outgoingPath + demand.getToken());
 
         }
 
@@ -123,7 +123,7 @@ public class ShabtiShimServlet extends HttpServlet {
 
         ShabtiShimDemand demand = new ShabtiShimDemand(request);
 
-        logger.info(demand.token);
+        logger.info(demand.getToken());
 
         writeDemand(demand);
 
@@ -135,19 +135,19 @@ public class ShabtiShimServlet extends HttpServlet {
 
     private void handleGoodIncomingDemand(ShabtiShimDemand demand) {
 
-        logger.info(String.format("Received valid authenticated demand for token %s", demand.token));
-        storage.delete(demand.token);
+        logger.info(String.format("Received valid authenticated demand for token %s", demand.getToken()));
+        storage.delete(demand.getToken());
 
     }
 
     private void handleBadIncomingDemand(ShabtiShimDemand demand) {
 
-        logger.warn(String.format("Received invalid authenticated demand for token %s", demand.token));
+        logger.warn(String.format("Received invalid authenticated demand for token %s", demand.getToken()));
         //logger.warn(demand.errorMessage());
 
-        if (demand != null && demand.token != null && ! demand.token.isEmpty()) {
+        if (demand != null && demand.getToken() != null && ! demand.getToken().isEmpty()) {
 
-            storage.delete(demand.token);
+            storage.delete(demand.getToken());
 
         }
     }
@@ -155,11 +155,11 @@ public class ShabtiShimServlet extends HttpServlet {
     private boolean informTheService(HttpServletRequest request, ShabtiShimDemand demand) {
 
         // Update request with data from the data
-        request.setAttribute("principal_name", demand.principal);
-        request.setAttribute("forceAuthn",     demand.forceAuthn);
-        request.setAttribute("isPassive",      demand.isPassive);
-        request.setAttribute("authnMethod",    demand.authnMethod);
-        request.setAttribute("relyingParty",   demand.relyingParty);
+        request.setAttribute("principal_name", demand.getPrincipal());
+        request.setAttribute("forceAuthn", demand.getForceAuthn());
+        request.setAttribute("isPassive", demand.getIsPassive());
+        request.setAttribute("authnMethod", demand.getAuthnMethod());
+        request.setAttribute("relyingParty", demand.getRelyingParty());
 
         return true;
 
@@ -181,16 +181,16 @@ public class ShabtiShimServlet extends HttpServlet {
 
         String exportedDemand = null;
         try {
-            logger.info(demand.token);
+            logger.info(demand.getToken());
             exportedDemand = mapper.writeValueAsString(demand);
         } catch (JsonProcessingException e) {
-            logger.error(String.format("Failed to write demand for token %s!", demand.token), e);
+            logger.error(String.format("Failed to write demand for token %s!", demand.getToken()), e);
         }
 
         logger.info("!Storing...");
         logger.info(exportedDemand);
 
-        storage.write(demand.token, exportedDemand);
+        storage.write(demand.getToken(), exportedDemand);
 
     }
 
@@ -205,7 +205,7 @@ public class ShabtiShimServlet extends HttpServlet {
         try {
             demand = mapper.readValue(importedDemand, ShabtiShimDemand.class);
         } catch (IOException e) {
-            logger.error(String.format("Failed to read demand for token %s!", demand.token), e);
+            logger.error(String.format("Failed to read demand for token %s!", demand.getToken()), e);
         }
 
         return demand;
