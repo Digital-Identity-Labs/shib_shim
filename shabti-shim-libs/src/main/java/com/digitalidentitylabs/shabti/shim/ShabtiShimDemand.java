@@ -91,34 +91,76 @@ public class ShabtiShimDemand {
         return shimModelVersion;
     }
 
-    public boolean isValidAuthenticatedDemand() {
+    private boolean isValidCommon() {
 
-        // Must have a valid and appropriate date (redundant?)
-        // ...
-
-
-        // Must have a token
+        // Must always have a token
         if (this.getToken() == null || this.getToken().isEmpty()) {
+            setValidationMessage("Missing token!");
             return false;
         }
 
         // Must have a supported serialisation version
         if (getVersion() > getShimModelVersion()) {
+            setValidationMessage("Incorrect demand version");
             return false;
         }
 
-        // Must be a Shibboleth demand
+        // Must match protocol of this instance of class
         if (! this.getProtocol().equals("shibboleth")) {
+            setValidationMessage("Incorrect demand protocol type");
             return false;
         }
 
-        // Must have a username!
+        return true;
+
+    }
+
+    public boolean isValidOutgoing() {
+
+        if (! this.isValidCommon()) {
+            return false;
+        }
+
+        // Must *not* have a username!
+        if (this.getPrincipal() != null) {
+            setValidationMessage("Principal was set - demand is not new?");
+            return false;
+        }
+
+        return true;
+
+    }
+
+    public boolean isValidIncoming() {
+
+        if (! this.isValidCommon()) {
+            return false;
+        }
+
+        return true;
+
+    }
+
+    public boolean isValidAndAuthenticated() {
+
+        if (! this.isValidIncoming()) {
+            return false;
+        }
+
+        // Must have a username! Existence of principal indicates authentication
         if (this.getPrincipal() == null || this.getPrincipal().isEmpty()) {
+            setValidationMessage("Principal was not set: not authenticated");
             return false;
         }
 
         // Can't find any other faults, so probably OK.
         return true;
+
+    }
+
+    private void setValidationMessage(String message) {
+
+        validationMessage = message;
 
     }
 

@@ -19,16 +19,21 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.mockito.internal.matchers.Matches;
 
-public class DemandStateTest {
+import java.util.regex.*;
 
-    private HttpServletRequest req;
-    private ServletConfig config;
+
+public class CommonDemandTest {
+
+    protected HttpServletRequest req;
+    protected ServletConfig config;
 
     @org.junit.Before
     public void setUp() throws Exception {
 
-        this.req = mock(HttpServletRequest.class);
+
+        this.req       = mock(HttpServletRequest.class);
 
         when(req.getAttribute("forceAuthn")).thenReturn("false");
         when(req.getAttribute("isPassive")).thenReturn("false");
@@ -52,9 +57,6 @@ public class DemandStateTest {
         this.config = null;
 
     }
-
-
-
 
 
 }

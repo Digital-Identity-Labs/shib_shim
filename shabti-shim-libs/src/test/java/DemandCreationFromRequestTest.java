@@ -24,38 +24,8 @@ import org.mockito.internal.matchers.Matches;
 import java.util.regex.*;
 
 
-public class DemandCreationTest {
+public class DemandCreationFromRequestTest extends CommonDemandTest {
 
-    private HttpServletRequest req;
-    private ServletConfig config;
-
-    @org.junit.Before
-    public void setUp() throws Exception {
-
-        this.req = mock(HttpServletRequest.class);
-
-        when(req.getAttribute("forceAuthn")).thenReturn("false");
-        when(req.getAttribute("isPassive")).thenReturn("false");
-        when(req.getAttribute("authnMethod")).thenReturn(null);
-        when(req.getAttribute("relyingParty")).thenReturn("https://service.example.com/shibboleth/sp");
-        when(req.getRemoteAddr()).thenReturn("192.168.1.1");
-        when(req.getHeader("User-Agent")).thenReturn("It's only a model");
-        when(req.getServerName()).thenReturn("example.com");
-        when(req.getRequestURL()).thenReturn(new StringBuffer("https://service.example.com/servlet/"));
-
-
-        this.config = mock(ServletConfig.class);
-
-
-    }
-
-    @org.junit.After
-    public void tearDown() throws Exception {
-
-        this.req    = null;
-        this.config = null;
-
-    }
 
     @org.junit.Test
     public void canCreateDemandFromRequest() {
@@ -250,14 +220,6 @@ public class DemandCreationTest {
 
         ShabtiShimDemand demand = new ShabtiShimDemand(req);
         assertThat( demand.getPrincipal(), is(nullValue()) );
-
-    }
-
-    @org.junit.Test
-    public void demandIsNotValidAuthenticated() {
-
-        ShabtiShimDemand demand = new ShabtiShimDemand(req);
-        assertFalse( demand.isValidAuthenticatedDemand() );
 
     }
 
