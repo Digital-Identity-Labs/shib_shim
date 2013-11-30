@@ -20,8 +20,8 @@ public class ShabtiShimDemand {
     @JsonProperty("token") public String token = null;
 
     // Core Shibboleth authentication context stuff
-    @JsonProperty("force")         protected Boolean forceAuthn   = false;
-    @JsonProperty("passive")       protected Boolean isPassive    = false;
+    @JsonProperty("force")         protected Boolean forceAuthn;
+    @JsonProperty("passive")       protected Boolean isPassive;
     @JsonProperty("method")        protected String  authnMethod;
     @JsonProperty("relying_party") protected String  relyingParty;
 
@@ -50,6 +50,7 @@ public class ShabtiShimDemand {
     public    String validationMessage = "";
 
 
+
     // Build new object from request
     public ShabtiShimDemand(HttpServletRequest request) {
 
@@ -58,10 +59,10 @@ public class ShabtiShimDemand {
         this.token = DigestUtils.md5Hex(uuid);
 
         // Core attributes
-        forceAuthn   = request.getAttribute("forceAuthn")   == null ? false : (Boolean) request.getAttribute("forceAuthn");
-        isPassive    = request.getAttribute("isPassive")    == null ? false : (Boolean) request.getAttribute("isPassive");
-        authnMethod  = request.getAttribute("authnMethod")  == null ? null  : request.getAttribute("authnMethod").toString();
-        relyingParty = request.getAttribute("relyingParty") == null ? null  : request.getAttribute("relyingParty").toString();
+        forceAuthn   = (request.getAttribute("forceAuthn"))   == null ? false : Boolean.valueOf((String) request.getAttribute("forceAuthn"));
+        isPassive    = (request.getAttribute("isPassive"))    == null ? false : Boolean.valueOf((String) request.getAttribute("isPassive"));
+        authnMethod  = (request.getAttribute("authnMethod")  == null) ? null  : (String)  request.getAttribute("authnMethod");
+        relyingParty = ((request.getAttribute("relyingParty") == null) ? "EH" : request.getAttribute("relyingParty").toString());
 
         // Metadata
         createdAt =  new DateTime(); //.toString(javascriptDateFormat);
@@ -72,10 +73,10 @@ public class ShabtiShimDemand {
 
         // Service information
         siteDomain = request.getServerName();
-        serverTag   = "indiid";
+        serverTag   = "service";
         component   = "core";
         protocol    = "shibboleth";
-        version     = shimModelVersion;
+        version     = getShimModelVersion();
 
         // A bit of glue info so the secondary auth can redirect back to here
         returnURL    = request.getRequestURL().toString(); // JSON parser seems to choke without .toString...
@@ -86,6 +87,10 @@ public class ShabtiShimDemand {
 
     }
 
+    public static int getShimModelVersion() {
+        return shimModelVersion;
+    }
+
     public boolean isValidAuthenticatedDemand() {
 
         // Must have a valid and appropriate date (redundant?)
@@ -93,22 +98,22 @@ public class ShabtiShimDemand {
 
 
         // Must have a token
-        if (this.token == null || this.token.isEmpty()) {
+        if (this.getToken() == null || this.getToken().isEmpty()) {
             return false;
         }
 
         // Must have a supported serialisation version
-        if (version > shimModelVersion ) {
+        if (getVersion() > getShimModelVersion()) {
             return false;
         }
 
         // Must be a Shibboleth demand
-        if (! this.protocol.equals("shibboleth")) {
+        if (! this.getProtocol().equals("shibboleth")) {
             return false;
         }
 
         // Must have a username!
-        if (this.principal == null || this.principal.isEmpty()) {
+        if (this.getPrincipal() == null || this.getPrincipal().isEmpty()) {
             return false;
         }
 
@@ -124,4 +129,63 @@ public class ShabtiShimDemand {
     }
 
 
+    public String getToken() {
+        return token;
+    }
+
+    public Boolean getForceAuthn() {
+        return forceAuthn;
+    }
+
+    public Boolean getIsPassive() {
+        return isPassive;
+    }
+
+    public String getAuthnMethod() {
+        return authnMethod;
+    }
+
+    public String getRelyingParty() {
+        return relyingParty;
+    }
+
+    public DateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public String getUserAddress() {
+        return userAddress;
+    }
+
+    public String getAgentHash() {
+        return agentHash;
+    }
+
+    public String getSiteDomain() {
+        return siteDomain;
+    }
+
+    public String getServerTag() {
+        return serverTag;
+    }
+
+    public String getComponent() {
+        return component;
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public String getReturnURL() {
+        return returnURL;
+    }
+
+    public String getPrincipal() {
+        return principal;
+    }
 }
