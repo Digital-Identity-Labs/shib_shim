@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.digest.DigestUtils;
 
-public class ShabtiShimDemandTest {
+public class DemandCreationTest {
 
     private HttpServletRequest req;
     private ServletConfig config;
@@ -130,8 +130,6 @@ public class ShabtiShimDemandTest {
         assertFalse( demand.getIsPassive() );
 
     }
-
-
 
     @org.junit.Test
     public void demandShowsAuthnMethodAsNullBeforeAuth() {
