@@ -19,6 +19,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.mockito.internal.matchers.Matches;
+
+import java.util.regex.*;
+
 
 public class DemandCreationTest {
 
@@ -48,17 +52,8 @@ public class DemandCreationTest {
     @org.junit.After
     public void tearDown() throws Exception {
 
-        req = null;
-
-    }
-
-
-
-    @org.junit.Test
-    public void thisShouldPass() {
-
-        assertTrue(true);
-        assertThat( "Hello World", containsString("Hello") );
+        this.req    = null;
+        this.config = null;
 
     }
 
@@ -66,6 +61,37 @@ public class DemandCreationTest {
     public void canCreateDemandFromRequest() {
 
         assertThat( new ShabtiShimDemand(req), instanceOf(ShabtiShimDemand.class) );
+
+    }
+
+    @org.junit.Test
+    public void demandHasToken() {
+
+        ShabtiShimDemand demand = new ShabtiShimDemand(req);
+
+        assertThat(  demand.getToken(), instanceOf(String.class) );
+
+    }
+
+    @org.junit.Test
+    public void demandHasLargeHexToken() {
+
+        ShabtiShimDemand demand = new ShabtiShimDemand(req);
+
+        // I assume Sun added regexes to Java on the condition that they were as awkwardly implemented as possible
+        Pattern md5Regex = Pattern.compile("^([a-fA-F\\d]{32})$");
+        Matcher md5Matcher = md5Regex.matcher(demand.getToken());
+
+        assertTrue( md5Matcher.matches() );
+    }
+
+    @org.junit.Test
+    public void demandHasUniqueTokenEvenForSameRequest() {
+
+        ShabtiShimDemand demand1 = new ShabtiShimDemand(req);
+        ShabtiShimDemand demand2 = new ShabtiShimDemand(req);
+
+        assertThat( demand1.getToken(), not(equalTo(demand2.getToken())));
 
     }
 
@@ -78,6 +104,7 @@ public class DemandCreationTest {
         assertFalse( demand.getForceAuthn() );
 
     }
+
 
     @org.junit.Test
     public void demandShowsActiveForcedAuth() {
