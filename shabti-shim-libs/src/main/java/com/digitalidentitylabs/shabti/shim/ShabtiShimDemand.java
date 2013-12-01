@@ -11,7 +11,8 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.joda.time.DateTime;
 
 @JsonAutoDetect(fieldVisibility= JsonAutoDetect.Visibility.NONE)
-@JsonIgnoreProperties({ "validAuthenticatedDemand" })
+
+@JsonIgnoreProperties({ "validAndAuthenticated", "validOutgoing", "validIncoming"})
 public class ShabtiShimDemand {
 
     // Internal protocol revision
@@ -49,7 +50,9 @@ public class ShabtiShimDemand {
     @JsonIgnore
     public    String validationMessage = "";
 
-
+    public ShabtiShimDemand() {
+        // Dummy constructor
+    }
 
     // Build new object from request
     public ShabtiShimDemand(HttpServletRequest request) {
@@ -59,8 +62,8 @@ public class ShabtiShimDemand {
         this.token = DigestUtils.md5Hex(uuid);
 
         // Core attributes
-        forceAuthn   = (request.getAttribute("forceAuthn"))   == null ? false : Boolean.valueOf((String) request.getAttribute("forceAuthn"));
-        isPassive    = (request.getAttribute("isPassive"))    == null ? false : Boolean.valueOf((String) request.getAttribute("isPassive"));
+        forceAuthn   = (request.getAttribute("forceAuthn"))   == null ? false : Boolean.valueOf((String) request.getAttribute("forceAuthn").toString());
+        isPassive    = (request.getAttribute("isPassive"))    == null ? false : Boolean.valueOf((String) request.getAttribute("isPassive").toString());
         authnMethod  = (request.getAttribute("authnMethod")  == null) ? null  : (String)  request.getAttribute("authnMethod");
         relyingParty = ((request.getAttribute("relyingParty") == null) ? "EH" : request.getAttribute("relyingParty").toString());
 

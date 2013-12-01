@@ -77,7 +77,7 @@ public class DemandCreationFromRequestTest extends CommonDemandTest {
 
 
     @org.junit.Test
-    public void demandShowsActiveForcedAuth() {
+    public void demandShowsActiveForcedAuthFromString() {
 
         when(req.getAttribute("forceAuthn")).thenReturn("true");
         ShabtiShimDemand demand = new ShabtiShimDemand(req);
@@ -87,7 +87,17 @@ public class DemandCreationFromRequestTest extends CommonDemandTest {
     }
 
     @org.junit.Test
-    public void demandShowsInactiveForcedAuth() {
+    public void demandShowsActiveForcedAuthFromBoolean() {
+
+        when(req.getAttribute("forceAuthn")).thenReturn(true);
+        ShabtiShimDemand demand = new ShabtiShimDemand(req);
+
+        assertTrue( demand.getForceAuthn() );
+
+    }
+
+    @org.junit.Test
+    public void demandShowsInactiveForcedAuthFromString() {
 
         when(req.getAttribute("forceAuthn")).thenReturn("false");
         ShabtiShimDemand demand = new ShabtiShimDemand(req);
@@ -97,31 +107,62 @@ public class DemandCreationFromRequestTest extends CommonDemandTest {
     }
 
     @org.junit.Test
-    public void demandShowsInactivePassiveAuthByDefault() {
+    public void demandShowsInactiveForcedAuthFromBoolean() {
 
-        when(req.getAttribute("isPassive")).thenReturn("false");
+        when(req.getAttribute("forceAuthn")).thenReturn(false);
         ShabtiShimDemand demand = new ShabtiShimDemand(req);
 
-        assertFalse( demand.getIsPassive() );
+        assertFalse( demand.getForceAuthn() );
 
     }
 
-
     @org.junit.Test
-    public void demandShowsActivePassiveAuth() {
+    public void demandShowsInactivePassiveAuthByDefault() {
 
         when(req.getAttribute("isPassive")).thenReturn(null);
         ShabtiShimDemand demand = new ShabtiShimDemand(req);
 
         assertFalse( demand.getIsPassive() );
 
+    }
+
+
+    @org.junit.Test
+    public void demandShowsActivePassiveAuthFromString() {
+
+        when(req.getAttribute("isPassive")).thenReturn("true");
+        ShabtiShimDemand demand = new ShabtiShimDemand(req);
+
+        assertTrue( demand.getIsPassive() );
+
 
     }
 
     @org.junit.Test
-    public void demandShowsInactivePassiveAuth() {
+    public void demandShowsActivePassiveAuthFromBoolean() {
+
+        when(req.getAttribute("isPassive")).thenReturn(true);
+        ShabtiShimDemand demand = new ShabtiShimDemand(req);
+
+        assertTrue( demand.getIsPassive() );
+
+
+    }
+
+    @org.junit.Test
+    public void demandShowsInactivePassiveAuthFromString() {
 
         when(req.getAttribute("isPassive")).thenReturn("false");
+        ShabtiShimDemand demand = new ShabtiShimDemand(req);
+
+        assertFalse( demand.getIsPassive() );
+
+    }
+
+    @org.junit.Test
+    public void demandShowsInactivePassiveAuthFromBoolean() {
+
+        when(req.getAttribute("isPassive")).thenReturn(false);
         ShabtiShimDemand demand = new ShabtiShimDemand(req);
 
         assertFalse( demand.getIsPassive() );
