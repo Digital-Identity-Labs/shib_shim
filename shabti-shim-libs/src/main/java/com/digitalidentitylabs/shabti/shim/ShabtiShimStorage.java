@@ -55,7 +55,7 @@ class ShabtiShimStorage {
         try {
 
             redis = redisPool.getResource();
-            redis.set(token, record);
+            redis.setex(token, 60, record);
 
         } finally {
 
