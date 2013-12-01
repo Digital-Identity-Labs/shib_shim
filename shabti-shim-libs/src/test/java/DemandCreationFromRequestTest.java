@@ -230,7 +230,6 @@ public class DemandCreationFromRequestTest extends CommonDemandTest {
 
         assertThat( demand.getServerTag(), equalTo("service") );
 
-
     }
 
 
