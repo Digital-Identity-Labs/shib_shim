@@ -95,7 +95,7 @@ public class ShabtiShimServlet extends HttpServlet {
 
             ShabtiShimDemand demand = readDemand(token);
 
-            if ( demand.isValidAuthenticatedDemand() ) {
+            if ( demand.isValidAndAuthenticated() ) {
 
                 // Pass data back into request for authEngine to use
                 handleGoodIncomingDemand(demand);
@@ -142,7 +142,7 @@ public class ShabtiShimServlet extends HttpServlet {
 
     private void handleBadIncomingDemand(ShabtiShimDemand demand) {
 
-        logger.warn(String.format("Received invalid authenticated demand for token %s", demand.getToken()));
+        logger.warn(String.format("Received invalid authenticated demand for token %s: %s", demand.getToken(), demand.getValidationMessage()));
         //logger.warn(demand.errorMessage());
 
         if (demand != null && demand.getToken() != null && ! demand.getToken().isEmpty()) {
@@ -187,7 +187,7 @@ public class ShabtiShimServlet extends HttpServlet {
             logger.error(String.format("Failed to write demand for token %s!", demand.getToken()), e);
         }
 
-        logger.info("!Storing...");
+        logger.info("Storing ...");
         logger.info(exportedDemand);
 
         storage.write(demand.getToken(), exportedDemand);
@@ -197,15 +197,19 @@ public class ShabtiShimServlet extends HttpServlet {
 
     private ShabtiShimDemand readDemand(String token) {
 
-        logger.info("!Reading...");
+        logger.info("Reading...");
 
         String importedDemand = storage.read(token);
+
+        // Create a nullobject for Demand if null is returned
+        importedDemand = ((importedDemand == null) ? "{}" : importedDemand);
+
 
         ShabtiShimDemand demand = null;
         try {
             demand = mapper.readValue(importedDemand, ShabtiShimDemand.class);
         } catch (IOException e) {
-            logger.error(String.format("Failed to read demand for token %s!", demand.getToken()), e);
+            logger.error(String.format("Failed to read demand for token %s!", token), e);
         }
 
         return demand;
