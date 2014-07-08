@@ -3,6 +3,7 @@ package com.digitalidentitylabs.shabti.shim;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.Protocol;
 
 
 class ShabtiShimStorage {
@@ -23,6 +24,11 @@ class ShabtiShimStorage {
 
     }
 
+    public ShabtiShimStorage(String host, int port, String password) {
+
+        redisPool = new JedisPool(new JedisPoolConfig(), host, port, Protocol.DEFAULT_TIMEOUT, password);
+
+    }
 
     public void destroy() {
 

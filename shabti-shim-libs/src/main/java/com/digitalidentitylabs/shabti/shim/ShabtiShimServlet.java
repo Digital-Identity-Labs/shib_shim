@@ -29,6 +29,9 @@ public class ShabtiShimServlet extends HttpServlet {
     // Redis port
     private static int redisPort = 6379;
 
+    // Redis password
+    private static String redisPassword = null;
+
     // Am I doing this right? It's not actually logging anything...
     private static final  Logger logger = LoggerFactory.getLogger("ShabtiShim");
 
@@ -56,9 +59,13 @@ public class ShabtiShimServlet extends HttpServlet {
                 redisHost : config.getInitParameter("redisHost");
         redisPort = config.getInitParameter("redisPort") == null ?
                 redisPort : Integer.parseInt(config.getInitParameter("redisPort"));
+        redisPassword = config.getInitParameter("redisPassword") == null ?
+                redisPassword : config.getInitParameter("redisPassword");
 
+        storage = redisPassword == null ?
+                new ShabtiShimStorage(redisHost, redisPort) : new ShabtiShimStorage(redisHost, redisPort, redisPassword);
 
-        storage = new ShabtiShimStorage(redisHost, redisPort);
+        logger.error(redisPassword);
 
         mapper = new ObjectMapper();
         mapper.registerModule(new JodaModule());

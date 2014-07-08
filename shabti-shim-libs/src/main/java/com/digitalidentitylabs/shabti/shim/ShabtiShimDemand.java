@@ -64,7 +64,7 @@ public class ShabtiShimDemand {
         // Core attributes
         forceAuthn   = (request.getAttribute("forceAuthn"))   == null ? false : Boolean.valueOf((String) request.getAttribute("forceAuthn").toString());
         isPassive    = (request.getAttribute("isPassive"))    == null ? false : Boolean.valueOf((String) request.getAttribute("isPassive").toString());
-        authnMethod  = (request.getAttribute("authnMethod")  == null) ? null  : (String)  request.getAttribute("authnMethod");
+        authnMethod  = (request.getAttribute("authnMethod")   == null) ? null  : (String)  request.getAttribute("authnMethod");
         relyingParty = ((request.getAttribute("relyingParty") == null) ? "EH" : request.getAttribute("relyingParty").toString());
 
         // Metadata

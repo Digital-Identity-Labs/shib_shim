@@ -16,3 +16,7 @@
 /shabti-shim-libs/target/
 
 /shabti-shim-war/target/
+
+/shabti-shim-war/shabti-shim-war.iml
+
+/.idea/copyright/profiles_settings.xml
