@@ -59,13 +59,10 @@ public class ShabtiShimServlet extends HttpServlet {
                 redisHost : config.getInitParameter("redisHost");
         redisPort = config.getInitParameter("redisPort") == null ?
                 redisPort : Integer.parseInt(config.getInitParameter("redisPort"));
-        redisPassword = config.getInitParameter("redisPassword") == null ?
-                redisPassword : config.getInitParameter("redisPassword");
+        redisPassword = (config.getInitParameter("redisPassword") == null ? redisPassword : config.getInitParameter("redisPassword"));
 
         storage = redisPassword == null ?
                 new ShabtiShimStorage(redisHost, redisPort) : new ShabtiShimStorage(redisHost, redisPort, redisPassword);
-
-        logger.error(redisPassword);
 
         mapper = new ObjectMapper();
         mapper.registerModule(new JodaModule());

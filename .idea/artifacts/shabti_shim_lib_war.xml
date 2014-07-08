@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="shabti-shim-lib:war">
-    <output-path>$PROJECT_DIR$/shabti-shim-lib/target</output-path>
-    <root id="archive" name="shabti-shim-libs.war">
-      <element id="artifact" artifact-name="shabti-shim-lib:war exploded" />
-    </root>
-  </artifact>
-</component>
