@@ -8,3 +8,5 @@ RUN /opt/jre-home/bin/keytool -keystore /opt/shibboleth-idp/credentials/idp-brow
     -alias jetty -genkey -storetype PKCS12 -keyalg RSA \
     -storepass abc123 -keypass abc123 \
     -dname "cn=localhost, ou=IT, o=Continuent, c=US" -noprompt
+
+RUN JAVA_HOME=/opt/jre-home /opt/shibboleth-idp/bin/build.sh

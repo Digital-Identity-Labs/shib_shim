@@ -25,6 +25,7 @@
         <module name="shabti-shim-lib" />
         <module name="shabti-shim-libs" />
         <module name="shabti-shim-war" />
+        <module name="shib_shim" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

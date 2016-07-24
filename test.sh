@@ -2,8 +2,13 @@
 
 set -ex
 
+mvn package
+
+mkdir -p sandbox/idp/shibboleth-idp/edit-webapp/WEB-INF/lib
+cp target/shabti-shim.jar sandbox/idp/shibboleth-idp/edit-webapp/WEB-INF/lib/
+
 docker-compose up -d --build
 
-cucumber
+#python test.py
 
-docker-compose logs
+#docker-compose -f logs
