@@ -1,0 +1,17 @@
+version: '2'
+services:
+  idp:
+    build:
+      context: sandbox/idp
+    ports:
+     - "4443:4443"
+     - "8443:8443"
+    environment:
+      - JETTY_BROWSER_SSL_KEYSTORE_PASSWORD=abc123
+      - JETTY_BACKCHANNEL_SSL_KEYSTORE_PASSWORD=abc
+  sp:
+    build:
+      context: sandbox/sp
+    ports:
+     - "80:80"
+     - "443:443"
