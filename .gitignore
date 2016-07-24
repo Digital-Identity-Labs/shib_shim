@@ -20,3 +20,5 @@
 /shabti-shim-war/shabti-shim-war.iml
 
 /.idea/copyright/profiles_settings.xml
+/.idea
+*.iml

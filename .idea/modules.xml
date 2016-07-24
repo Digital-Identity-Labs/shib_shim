@@ -4,8 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/shabti-shim-libs/shabti-shim-libs.iml" filepath="$PROJECT_DIR$/shabti-shim-libs/shabti-shim-libs.iml" />
       <module fileurl="file://$PROJECT_DIR$/shabti-shim-war/shabti-shim-war.iml" filepath="$PROJECT_DIR$/shabti-shim-war/shabti-shim-war.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shabti-shim-war/shabti-shim-war.iml" filepath="$PROJECT_DIR$/shabti-shim-war/shabti-shim-war.iml" />
       <module fileurl="file://$PROJECT_DIR$/shib_shim.iml" filepath="$PROJECT_DIR$/shib_shim.iml" />
     </modules>
   </component>
 </project>
-
