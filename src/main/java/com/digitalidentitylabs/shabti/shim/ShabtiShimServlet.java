@@ -47,9 +47,10 @@ public class ShabtiShimServlet extends HttpServlet {
 
             // Write serialized Demand bean to Redis
             final ObjectMapper mapper = new ObjectMapper();
-            this.jedis.set("key", mapper.writeValueAsString(demand));
+            final String key = "key"; // TODO: Generate this randomly
+            this.jedis.set(key, mapper.writeValueAsString(demand));
 
-            response.sendRedirect("http://shib.local:5000/");
+            response.sendRedirect("http://shib.local:5000/" + key);
 
         } catch (final ExternalAuthenticationException e) {
             throw new ServletException("Error processing external authentication request", e);

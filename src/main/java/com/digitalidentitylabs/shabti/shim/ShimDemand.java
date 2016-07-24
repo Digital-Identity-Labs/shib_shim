@@ -9,4 +9,5 @@ public class ShimDemand {
     @JsonProperty("passive")       protected Boolean isPassive = false;
     @JsonProperty("method")        protected String  authnMethod = "";
     @JsonProperty("relying_party") protected String  relyingParty = "";
+    @JsonProperty("principal")        protected String  principal = "";
 }

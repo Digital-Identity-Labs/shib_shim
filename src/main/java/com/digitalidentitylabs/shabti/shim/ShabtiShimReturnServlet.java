@@ -30,8 +30,10 @@ public class ShabtiShimReturnServlet extends HttpServlet {
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
 
+        final String key = request.getParameter("token");
+
         final ObjectMapper mapper = new ObjectMapper();
-        final ShimDemand demand = mapper.readValue(jedis.get("key"), ShimDemand.class);
+        final ShimDemand demand = mapper.readValue(jedis.get(key), ShimDemand.class);
 
         HttpSession session = request.getSession();
         session.setAttribute("conversationemyconv1", new ExternalAuthentication() {
@@ -42,6 +44,8 @@ public class ShabtiShimReturnServlet extends HttpServlet {
         });
 
         try {
+
+            request.setAttribute(ExternalAuthentication.PRINCIPAL_NAME_KEY, demand.principal);
 
             ExternalAuthentication.finishExternalAuthentication(demand.externalAuthKey, request, response);
 

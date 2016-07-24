@@ -1,5 +1,6 @@
+import json
 import redis
-from flask import Flask, request
+from flask import Flask, request, redirect
 
 
 app = Flask(__name__)
@@ -10,7 +11,12 @@ r = redis.StrictRedis(host='redis', port=6379, db=0)
 
 @app.route("/", methods=['POST'])
 def login():
-    print """LOGIN: {token}""".format(token=request.query['token'])
+    token = request.form['token']
+    demand = json.loads(r.get(token))
+    demand['principal'] = 'test_mctestface'
+    r.set(token, json.dumps(demand))
+    # There's definitely a better way to build a URL safely :-)
+    return redirect("https://shib.local:4443/idp/Authn/Shim/Return?token=" + token, code=302)
 
 
 @app.route("/<token>", methods=['GET'])
@@ -26,4 +32,4 @@ def auth(token):
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0')

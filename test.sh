@@ -11,4 +11,4 @@ docker-compose up -d --build
 
 #python test.py
 
-#docker-compose -f logs
+docker-compose logs -f
