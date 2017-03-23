@@ -5,8 +5,15 @@
   <artifactId>shabti-shim</artifactId>
   <packaging>jar</packaging>
   <name>Shabti Shim Libraries</name>
-  <version>0.0.0</version>
+  <version>0.0.1</version>
   <url>http://maven.apache.org</url>
+
+  <repositories>
+    <repository>
+      <id>Shibboleth</id>
+      <url>https://build.shibboleth.net/nexus/content/repositories/releases/</url>
+    </repository>
+  </repositories>
 
   <dependencies>
     <dependency>
@@ -15,12 +22,18 @@
       <version>3.1.0</version>
       <scope>compile</scope>
     </dependency>
+    <!--<dependency>-->
+      <!--<groupId>net.shibboleth.idp</groupId>-->
+      <!--<artifactId>idp-authn-api</artifactId>-->
+      <!--<version>3.3.1</version>-->
+      <!--<scope>system</scope>-->
+      <!--<systemPath>${project.basedir}/lib/idp-authn-api-3.3.1.jar</systemPath>-->
+    <!--</dependency>-->
+    <!-- https://mvnrepository.com/artifact/net.shibboleth.idp/idp-authn-api -->
     <dependency>
       <groupId>net.shibboleth.idp</groupId>
       <artifactId>idp-authn-api</artifactId>
-      <version>3.2.1</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/lib/idp-authn-api-3.2.1.jar</systemPath>
+      <version>3.3.1</version>
     </dependency>
     <dependency>
       <groupId>org.httpunit</groupId>
@@ -128,6 +141,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
+        <version>3.0.0</version>
         <configuration>
           <failOnMissingWebXml>false</failOnMissingWebXml>
         </configuration>
