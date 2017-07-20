@@ -1,0 +1,35 @@
+version: '2'
+services:
+  frontend:
+    image: traefik:latest
+    command: --web --docker --docker.domain=docker.localhost --logLevel=DEBUG
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+      - "8433:8443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./frontend/traefik.toml:/traefik.toml
+      - ./frontend/certs:/certs
+
+
+
+
+#  idp:
+#    build:
+#      context: sandbox/idp
+#    ports:
+#     - "4443:4443"
+#     - "8443:8443"
+#    environment:
+#      - JETTY_BROWSER_SSL_KEYSTORE_PASSWORD=abc123
+#      - JETTY_BACKCHANNEL_SSL_KEYSTORE_PASSWORD=abc
+
+#  auth:
+#    build:
+#      context: auth
+#    ports:
+#     - "5000:5000"
+#  redis:
+#    image: redis
