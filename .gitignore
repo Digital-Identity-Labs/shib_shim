@@ -7,8 +7,6 @@
 
 /.DS_Store
 
-/.idea/workspace.xml
-
 /target/shib_shim/
 
 /target/
@@ -19,7 +17,7 @@
 
 /shabti-shim-war/shabti-shim-war.iml
 
-/.idea/copyright/profiles_settings.xml
 /.idea
 *.iml
 /shib_shim.iml
+/demo/frontend/certs/*.pem
