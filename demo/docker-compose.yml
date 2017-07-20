@@ -13,8 +13,23 @@ services:
       - ./frontend/traefik.toml:/traefik.toml
       - ./frontend/certs:/certs
 
+  redis:
+    image: redis
+    labels:
+      - "traefik.enable=false"
 
-
+  sp:
+    image: digitalidentity/rasp
+    volumes:
+      - ./sp/shibboleth:/etc/shibboleth
+      - ./sp/html:/var/www/html
+    labels:
+      - "traefik.backend=sp"
+      - "traefik.frontend.passHostHeader=true"
+      - "traefik.frontend.rule=Host:sp.localhost.federated-example.org"
+      - "traefik.frontend.entryPoints=http,https"
+      - "traefik.port=80"
+      - "traefik.protocol=http"
 
 #  idp:
 #    build:
