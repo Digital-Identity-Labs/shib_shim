@@ -20,7 +20,7 @@
     -->
 
     <!-- The ApplicationDefaults element is where most of Shibboleth's SAML bits are defined. -->
-    <ApplicationDefaults entityID="https://sp.example.org/shibboleth"
+    <ApplicationDefaults entityID="https://sp.localhost.federated-example.org/shibboleth"
                          REMOTE_USER="eppn persistent-id targeted-id">
 
         <!--
@@ -41,7 +41,7 @@
             (Set discoveryProtocol to "WAYF" for legacy Shibboleth WAYF support.)
             You can also override entityID on /Login query string, or in RequestMap/htaccess.
             -->
-            <SSO entityID="https://shib.local/idp/shibboleth"
+            <SSO entityID="https://idp.localhost.demo.university/idp/shibboleth"
                  discoveryProtocol="SAMLDS" discoveryURL="https://ds.example.org/DS/WAYF">
               SAML2 SAML1
             </SSO>

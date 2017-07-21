@@ -42,20 +42,18 @@ services:
       - "traefik.port=5000"
       - "traefik.protocol=http"
 
-#  idp:
-#    build:
-#      context: sandbox/idp
-#    ports:
-#     - "4443:4443"
-#     - "8443:8443"
-#    environment:
-#      - JETTY_BROWSER_SSL_KEYSTORE_PASSWORD=abc123
-#      - JETTY_BACKCHANNEL_SSL_KEYSTORE_PASSWORD=abc
+  idp:
+    build:
+      context: idp
+    environment:
+      - JETTY_BROWSER_SSL_KEYSTORE_PASSWORD=abc123
+      - JETTY_BACKCHANNEL_SSL_KEYSTORE_PASSWORD=abc
+    labels:
+      - "traefik.backend=idp"
+      - "traefik.frontend.passHostHeader=true"
+      - "traefik.frontend.rule=Host:idp.localhost.demo.university"
+      - "traefik.frontend.entryPoints=http,https"
+      - "traefik.port=8080"
+      - "traefik.protocol=http"
 
-#  auth:
-#    build:
-#      context: auth
-#    ports:
-#     - "5000:5000"
-#  redis:
-#    image: redis
+
