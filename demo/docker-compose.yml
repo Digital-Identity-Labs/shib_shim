@@ -23,6 +23,7 @@ services:
     volumes:
       - ./sp/shibboleth:/etc/shibboleth
       - ./sp/html:/var/www/html
+      - ./sp/000-default.conf:/etc/apache2/sites-available/000-default.conf
     labels:
       - "traefik.backend=sp"
       - "traefik.frontend.passHostHeader=true"
