@@ -4,7 +4,6 @@ services:
     image: traefik:latest
     command: --web --docker --docker.domain=docker.localhost --logLevel=DEBUG
     ports:
-      - "80:80"
       - "443:443"
       - "8080:8080"
       - "8433:8443"
@@ -28,7 +27,7 @@ services:
       - "traefik.backend=sp"
       - "traefik.frontend.passHostHeader=true"
       - "traefik.frontend.rule=Host:sp.localhost.federated-example.org"
-      - "traefik.frontend.entryPoints=http,https"
+      - "traefik.frontend.entryPoints=https"
       - "traefik.port=80"
       - "traefik.protocol=http"
 
@@ -39,7 +38,7 @@ services:
       - "traefik.backend=auth"
       - "traefik.frontend.passHostHeader=true"
       - "traefik.frontend.rule=Host:auth.localhost.demo.university"
-      - "traefik.frontend.entryPoints=http,https"
+      - "traefik.frontend.entryPoints=https"
       - "traefik.port=5000"
       - "traefik.protocol=http"
 
@@ -53,7 +52,7 @@ services:
       - "traefik.backend=idp"
       - "traefik.frontend.passHostHeader=true"
       - "traefik.frontend.rule=Host:idp.localhost.demo.university"
-      - "traefik.frontend.entryPoints=http,https"
+      - "traefik.frontend.entryPoints=https"
       - "traefik.port=8080"
       - "traefik.protocol=http"
 
