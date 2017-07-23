@@ -1,5 +1,42 @@
 
+desc "Build the Shim jar files"
+task :build do
+ sh "mvn clean && mvn package"
+end
+
 namespace :demo do 
+
+
+  desc "Run demo"
+  task :start => ["demo:provision"] do
+
+    cd "demo" do
+      sh "docker-compose  up -d --build --force-recreate"
+    end
+
+  end
+
+  desc "Stop demo"
+  task :stop do
+
+    cd "demo" do
+      sh "docker-compose  down"
+    end
+
+  end
+
+  desc "View live Docker logs for demo"
+  task :tail do
+    cd "demo" do
+      sh "docker-compose logs -f"
+    end
+  end
+
+  desc "Install jar file"
+  task :provision => ["rake:build"] do
+    mkdir_p "demo/idp/shibboleth-idp/edit-webapp/WEB-INF/lib"
+    sh "cp target/shabti-shim.jar demo/idp/shibboleth-idp/edit-webapp/WEB-INF/lib"
+  end
 
   desc "Regenerate certificates"
   task :regenerate_certs do
