@@ -1,6 +1,6 @@
-FROM digitalidentity/ishigaki:latest
+FROM digitalidentity/ishigaki:0.1.4
 
-MAINTAINER test@example.com
+MAINTAINER pete@digitalidentity.labs.com
 
 ADD shibboleth-idp/ /opt/shibboleth-idp/
 
