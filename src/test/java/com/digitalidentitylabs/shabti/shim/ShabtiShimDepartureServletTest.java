@@ -3,12 +3,6 @@ package com.digitalidentitylabs.shabti.shim;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.meterware.httpunit.GetMethodWebRequest;
-import com.meterware.httpunit.WebRequest;
-import com.meterware.httpunit.WebResponse;
-import com.meterware.servletunit.InvocationContext;
-import com.meterware.servletunit.ServletRunner;
-import com.meterware.servletunit.ServletUnitClient;
 import net.shibboleth.idp.authn.ExternalAuthentication;
 import net.shibboleth.idp.authn.ExternalAuthenticationException;
 import org.junit.Before;
@@ -17,7 +11,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.core.CollectionFactory;
 import redis.clients.jedis.Jedis;
 
 import javax.servlet.ServletException;
@@ -31,10 +24,10 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 
-public class ShabtiShimServletTest {
+public class ShabtiShimDepartureServletTest {
 
     private Jedis jedis;
-    private ShabtiShimServlet servlet;
+    private ShabtiShimDepartureServlet servlet;
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
 
@@ -42,7 +35,7 @@ public class ShabtiShimServletTest {
     @Before
     public void setUp() {
         jedis = Mockito.mock(Jedis.class);
-        servlet = new ShabtiShimServlet(jedis);
+        servlet = new ShabtiShimDepartureServlet(jedis);
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
 
