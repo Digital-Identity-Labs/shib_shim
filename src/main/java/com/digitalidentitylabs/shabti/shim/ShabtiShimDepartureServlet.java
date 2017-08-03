@@ -22,8 +22,6 @@ import java.lang.reflect.Array;
 import java.util.Enumeration;
 import java.util.Map;
 
-
-
 @WebServlet(
         name = "ShabtiShimDepartureServlet",
         description = "Servlet to create auth demand, and redirect to auth service",
