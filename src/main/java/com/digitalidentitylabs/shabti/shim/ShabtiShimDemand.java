@@ -2,7 +2,7 @@ package com.digitalidentitylabs.shabti.shim;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ShimDemand {
+public class ShabtiShimDemand {
 
     @JsonProperty("external_auth_key") protected String  externalAuthKey = "";
     @JsonProperty("force")             protected Boolean forceAuthn = false;

@@ -1,6 +1,5 @@
 package com.digitalidentitylabs.shabti.shim;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.shibboleth.idp.authn.ExternalAuthentication;
 import net.shibboleth.idp.authn.ExternalAuthenticationException;
@@ -21,12 +20,11 @@ import java.io.IOException;
         urlPatterns = {"/Authn/Shim/Return"},
         initParams={
                 @WebInitParam(name="failPath",      value="/500"),
-                @WebInitParam(name="redisHost",     value="127.0.0.1"),
-                @WebInitParam(name="redisPort",     value="6379"),
-                @WebInitParam(name="redisPassword", value="")
+                @WebInitParam(name="propertiesFile", value="shim.properties")
         }
 )
 public class ShabtiShimReturnServlet extends HttpServlet {
+
 
     private final Jedis jedis;
 
@@ -44,7 +42,7 @@ public class ShabtiShimReturnServlet extends HttpServlet {
         final String key = request.getParameter("token");
 
         final ObjectMapper mapper = new ObjectMapper();
-        final ShimDemand demand = mapper.readValue(jedis.get(key), ShimDemand.class);
+        final ShabtiShimDemand demand = mapper.readValue(jedis.get(key), ShabtiShimDemand.class);
 
         HttpSession session = request.getSession();
         session.setAttribute("conversationemyconv1", new ExternalAuthentication() {
