@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.shibboleth.idp.authn.ExternalAuthentication;
 import net.shibboleth.idp.authn.ExternalAuthenticationException;
+import org.apache.commons.lang.StringUtils;
 import redis.clients.jedis.*;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ import java.io.InputStream;
 
 
 @WebServlet(
-        name = "ShabtiShimDepartureServlet",
+        name = "DepartureServlet",
         description = "Servlet to create auth demand, and redirect to auth service",
         urlPatterns = {"/Shim"},
         initParams = {
@@ -27,28 +28,28 @@ import java.io.InputStream;
                 @WebInitParam(name = "failPath", value = "/500")
         }
 )
-public class ShabtiShimDepartureServlet extends HttpServlet {
+public class DepartureServlet extends HttpServlet {
 
-    private final Properties properties = new Properties();
-    private JedisPool jedisPool = null;
+    private Properties    properties = new Properties();
+    private DemandStorage storage    = null;
 
-    public ShabtiShimDepartureServlet() throws IOException {
+    public DepartureServlet() throws IOException {
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         InputStream input = classLoader.getResourceAsStream(properties.getProperty("propertiesFile"));
         Properties properties = new Properties();
         properties.load(input);
 
-        JedisPool jedisPool = new JedisPool(
-                new JedisPoolConfig(),
-                properties.getProperty("redis_host"),
-                Integer.parseInt(properties.getProperty("redis_port"))
-        );
+        if (StringUtils.isBlank(properties.getProperty("password"))) {
+            storage = new DemandStorage(properties.getProperty("redis_host"),  Integer.parseInt(properties.getProperty("redis_port")));
+        } else {
+            storage = new DemandStorage(properties.getProperty("redis_host"),  Integer.parseInt(properties.getProperty("redis_port")), properties.getProperty("password"));
+        }
 
     }
 
-    public ShabtiShimDepartureServlet(final JedisPool jedisPool) {
-        this.jedisPool = jedisPool;
+    public DepartureServlet(final DemandStorage storage) {
+        this.storage = storage;
     }
 
     @Override
@@ -56,19 +57,9 @@ public class ShabtiShimDepartureServlet extends HttpServlet {
 
         try {
 
-            final ShabtiShimDemand demand = new ShabtiShimDemand();
-            demand.externalAuthKey = ExternalAuthentication.startExternalAuthentication(request);
-            demand.relyingParty = request.getAttribute(ExternalAuthentication.RELYING_PARTY_PARAM).toString();
-            demand.authnMethod = request.getAttribute(ExternalAuthentication.AUTHN_METHOD_PARAM).toString();
-            demand.isPassive = Boolean.parseBoolean(request.getAttribute(ExternalAuthentication.PASSIVE_AUTHN_PARAM).toString());
-            demand.forceAuthn = Boolean.parseBoolean(request.getAttribute(ExternalAuthentication.FORCE_AUTHN_PARAM).toString());
+            ShibDemandProcessor.provision()
 
-            // Write serialized Demand bean to Redis
-            final ObjectMapper mapper = new ObjectMapper();
-            final String key = "key"; // TODO: Generate this randomly
-            Jedis jedis = jedisPool.getResource();
-//            jedis.auth("password");
-            jedis.set(key, mapper.writeValueAsString(demand));
+            storage.write(demand.id(), demand.toJSON());
 
             response.sendRedirect("https://auth.localhost.demo.university/" + key);
 

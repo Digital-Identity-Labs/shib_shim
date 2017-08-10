@@ -1,33 +1,25 @@
 package com.digitalidentitylabs.shabti.shim;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import net.shibboleth.idp.authn.ExternalAuthentication;
 import net.shibboleth.idp.authn.ExternalAuthenticationException;
 import org.junit.Before;
-import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import redis.clients.jedis.*;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 
-public class ShabtiShimDepartureServletTest {
+public class DepartureServletTest {
 
     private JedisPool jedisPool;
-    private ShabtiShimDepartureServlet servlet;
+    private DepartureServlet servlet;
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
 
@@ -35,7 +27,7 @@ public class ShabtiShimDepartureServletTest {
     @Before
     public void setUp() {
         jedisPool = Mockito.mock(JedisPool.class);
-        servlet = new ShabtiShimDepartureServlet(jedisPool);
+        servlet = new DepartureServlet(jedisPool);
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
 

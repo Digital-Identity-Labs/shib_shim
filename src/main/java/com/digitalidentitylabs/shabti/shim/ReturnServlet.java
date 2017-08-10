@@ -15,7 +15,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 @WebServlet(
-        name = "ShabtiShimReturnServlet",
+        name = "ReturnServlet",
         description = "Servlet to accept and process completed demand from an authentication service",
         urlPatterns = {"/Authn/Shim/Return"},
         initParams={
@@ -23,16 +23,16 @@ import java.io.IOException;
                 @WebInitParam(name="propertiesFile", value="shim.properties")
         }
 )
-public class ShabtiShimReturnServlet extends HttpServlet {
+public class ReturnServlet extends HttpServlet {
 
 
     private final Jedis jedis;
 
-    public ShabtiShimReturnServlet() {
+    public ReturnServlet() {
         jedis = new Jedis("redis");
     }
 
-    public ShabtiShimReturnServlet(final Jedis jedis) {
+    public ReturnServlet(final Jedis jedis) {
         this.jedis = jedis;
     }
 
@@ -42,7 +42,7 @@ public class ShabtiShimReturnServlet extends HttpServlet {
         final String key = request.getParameter("token");
 
         final ObjectMapper mapper = new ObjectMapper();
-        final ShabtiShimDemand demand = mapper.readValue(jedis.get(key), ShabtiShimDemand.class);
+        final Demand demand = mapper.readValue(jedis.get(key), Demand.class);
 
         HttpSession session = request.getSession();
         session.setAttribute("conversationemyconv1", new ExternalAuthentication() {
@@ -65,6 +65,7 @@ public class ShabtiShimReturnServlet extends HttpServlet {
         }
 
     }
+
 
 
 }
