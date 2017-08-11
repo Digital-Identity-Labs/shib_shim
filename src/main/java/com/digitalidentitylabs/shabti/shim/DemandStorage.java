@@ -14,12 +14,6 @@ public class DemandStorage {
 
         redisPool = new JedisPool(new JedisPoolConfig(), "localhost", 6379);
 
-        JedisPool jedisPool = new JedisPool(
-                new JedisPoolConfig(),
-                properties.getProperty("redis_host"),
-                Integer.parseInt(properties.getProperty("redis_port"))
-        );
-
     }
 
     public DemandStorage(String host, int port) {
