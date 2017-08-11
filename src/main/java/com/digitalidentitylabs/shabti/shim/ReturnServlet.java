@@ -23,26 +23,18 @@ import java.io.IOException;
                 @WebInitParam(name="propertiesFile", value="shim.properties")
         }
 )
-public class ReturnServlet extends HttpServlet {
+public class ReturnServlet extends ShimServlet {
 
-
-    private final Jedis jedis;
-
-    public ReturnServlet() {
-        jedis = new Jedis("redis");
-    }
-
-    public ReturnServlet(final Jedis jedis) {
-        this.jedis = jedis;
+    public ReturnServlet() throws IOException {
+        super();
     }
 
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
 
-        final String key = request.getParameter("token");
+        final String demandId = request.getParameter("token");
 
-        final ObjectMapper mapper = new ObjectMapper();
-        final Demand demand = mapper.readValue(jedis.get(key), Demand.class);
+        final Demand demand = storage.read(demandId);
 
         HttpSession session = request.getSession();
         session.setAttribute("conversationemyconv1", new ExternalAuthentication() {
@@ -56,7 +48,7 @@ public class ReturnServlet extends HttpServlet {
 
             request.setAttribute(ExternalAuthentication.PRINCIPAL_NAME_KEY, demand.principal);
 
-            ExternalAuthentication.finishExternalAuthentication(demand.externalAuthKey, request, response);
+            ExternalAuthentication.finishExternalAuthentication(demand.jobKey, request, response);
 
         } catch (ExternalAuthenticationException e) {
 

@@ -28,43 +28,26 @@ import java.io.InputStream;
                 @WebInitParam(name = "failPath", value = "/500")
         }
 )
-public class DepartureServlet extends HttpServlet {
-
-    private Properties    properties = new Properties();
-    private DemandStorage storage    = null;
+public class DepartureServlet extends ShimServlet {
 
     public DepartureServlet() throws IOException {
-
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        InputStream input = classLoader.getResourceAsStream(properties.getProperty("propertiesFile"));
-        Properties properties = new Properties();
-        properties.load(input);
-
-        if (StringUtils.isBlank(properties.getProperty("password"))) {
-            storage = new DemandStorage(properties.getProperty("redis_host"),  Integer.parseInt(properties.getProperty("redis_port")));
-        } else {
-            storage = new DemandStorage(properties.getProperty("redis_host"),  Integer.parseInt(properties.getProperty("redis_port")), properties.getProperty("password"));
-        }
-
+        super();
     }
 
-    public DepartureServlet(final DemandStorage storage) {
-        this.storage = storage;
-    }
 
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
 
         try {
 
-            ShibDemandProcessor.provision()
+            Demand demand = processor.provision(request);
 
-            storage.write(demand.id(), demand.toJSON());
+            storage.write(demand.id, demand.toJSON());
 
-            response.sendRedirect("https://auth.localhost.demo.university/" + key);
+            response.sendRedirect("https://auth.localhost.demo.university/" + demand.id);
 
         } catch (final ExternalAuthenticationException e) {
-            throw new ServletException("Error processing external authentication request", e);
+            throw new ServletException("Error preparing external authentication request", e);
         }
     }
 
