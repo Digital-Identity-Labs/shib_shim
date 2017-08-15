@@ -55,7 +55,7 @@ public class DemandStorage {
 
         } finally {
 
-            redisPool.returnResource(redis);
+            redisPool.close();
 
         }
 
@@ -73,7 +73,7 @@ public class DemandStorage {
 
         } finally {
 
-            redisPool.returnResource(redis);
+            redisPool.close();
 
         }
 
@@ -93,7 +93,7 @@ public class DemandStorage {
 
         } finally {
 
-            redisPool.returnResource(redis);
+            redisPool.close();
 
         }
 
