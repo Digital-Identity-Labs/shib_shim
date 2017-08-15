@@ -42,7 +42,7 @@ public class DepartureServlet extends ShimServlet {
 
             Demand demand = processor.provision(request);
 
-            storage.write(demand.id, demand.toJSON());
+            storage.write(demand);
 
             response.sendRedirect("https://auth.localhost.demo.university/" + demand.id);
 
