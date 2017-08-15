@@ -29,7 +29,7 @@ public class Demand {
 
     @JsonProperty("principal")         protected String  principal    = null;
 
-    @JsonProperty("created_at")        protected DateTime  createdAt  = null;
+    @JsonProperty("created_at")        protected DateTime createdAt  = null;
 
     @JsonProperty("user_address")      protected String  userAddress  = null;
     @JsonProperty("agent_hash")        protected String  agentHash    = null;

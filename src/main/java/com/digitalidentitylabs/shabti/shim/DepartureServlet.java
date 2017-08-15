@@ -23,9 +23,7 @@ import java.io.InputStream;
         description = "Servlet to create auth demand, and redirect to auth service",
         urlPatterns = {"/Shim"},
         initParams = {
-                @WebInitParam(name = "outgoingPath", value = "/login/authn/new/"),
-                @WebInitParam(name = "propertiesFile", value = "shim.properties"),
-                @WebInitParam(name = "failPath", value = "/500")
+                @WebInitParam(name = "propertiesFile", value = "shim.properties")
         }
 )
 public class DepartureServlet extends ShimServlet {
@@ -47,7 +45,7 @@ public class DepartureServlet extends ShimServlet {
 
             storage.write(demand);
 
-            response.sendRedirect("https://auth.localhost.demo.university/" + demand.id);
+            response.sendRedirect(properties.getProperty("auth_url") + "/" + demand.id);
 
         } catch (final ExternalAuthenticationException e) {
             throw new ServletException("Error preparing external authentication request", e);
