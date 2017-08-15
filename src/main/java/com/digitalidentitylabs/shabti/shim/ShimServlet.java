@@ -24,7 +24,7 @@ public abstract class ShimServlet extends HttpServlet {
             super.init();
 
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-            InputStream input = classLoader.getResourceAsStream(properties.getProperty("propertiesFile"));
+            InputStream input = classLoader.getResourceAsStream(getInitParameter("propertiesFile"));
             Properties properties = new Properties();
             properties.load(input);
 

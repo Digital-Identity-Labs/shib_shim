@@ -1,6 +1,6 @@
 <Configure class="org.eclipse.jetty.webapp.WebAppContext">
     <Set name="war">/opt/shim/war/shabti-shim.war</Set>
-    <Set name="contextPath">/shabti_shim</Set>
+    <Set name="contextPath">/idp</Set>
     <Set name="extractWAR">false</Set>
     <Set name="copyWebDir">false</Set>
     <Set name="copyWebInf">true</Set>

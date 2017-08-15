@@ -32,10 +32,10 @@ namespace :demo do
     end
   end
 
-  desc "Install jar file"
+  desc "Install war file into demo"
   task :provision => ["rake:build"] do
-    mkdir_p "demo/idp/shibboleth-idp/edit-webapp/WEB-INF/lib"
-    sh "cp target/shabti-shim.jar demo/idp/shibboleth-idp/edit-webapp/WEB-INF/lib"
+    mkdir_p "demo/idp/optfs/shibboleth-idp/edit-webapp/WEB-INF/lib"
+    sh "cp target/shabti-shim.war demo/idp/optfs/shim/war/"
   end
 
   desc "Regenerate certificates"

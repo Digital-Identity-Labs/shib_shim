@@ -14,7 +14,7 @@
 
     <!-- Servlet context-relative path to wherever your implementation lives. -->
     <bean id="shibboleth.authn.External.externalAuthnPath" class="java.lang.String"
-          c:_0="contextRelative:Authn/Shim" />
+          c:_0="contextRelative:/Authn/shim/init" />
 
     <!-- Populate RP UI info from metadata? -->
     <util:constant id="shibboleth.authn.External.populateUIInfo" static-field="java.lang.Boolean.FALSE" />

@@ -21,7 +21,7 @@ import java.io.InputStream;
 @WebServlet(
         name = "DepartureServlet",
         description = "Servlet to create auth demand, and redirect to auth service",
-        urlPatterns = {"/Shim"},
+        urlPatterns = {"/Authn/shim/init"},
         initParams = {
                 @WebInitParam(name = "propertiesFile", value = "shim.properties")
         }

@@ -2,7 +2,7 @@ FROM digitalidentity/ishigaki:0.1.4
 
 MAINTAINER pete@digitalidentity.labs.com
 
-ADD shibboleth-idp/ /opt/shibboleth-idp/
+ADD optfs/ /opt/
 
 USER root
 RUN keytool -keystore /opt/shibboleth-idp/credentials/idp-browser.p12 \

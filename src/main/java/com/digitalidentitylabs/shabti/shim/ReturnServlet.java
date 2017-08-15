@@ -17,7 +17,7 @@ import java.io.IOException;
 @WebServlet(
         name = "ReturnServlet",
         description = "Servlet to accept and process completed demand from an authentication service",
-        urlPatterns = {"/Authn/Shim/Return"},
+        urlPatterns = {"/Authn/shim/return/*"},
         initParams={
                 @WebInitParam(name="propertiesFile", value="shim.properties")
         }
