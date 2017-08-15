@@ -11,6 +11,8 @@ import redis.clients.jedis.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import java.io.IOException;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -18,16 +20,16 @@ import static org.mockito.Mockito.verify;
 
 public class DepartureServletTest {
 
-    private JedisPool jedisPool;
+    private DemandStorage storage;
     private DepartureServlet servlet;
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
 
 
     @Before
-    public void setUp() {
-        jedisPool = Mockito.mock(JedisPool.class);
-        servlet = new DepartureServlet(jedisPool);
+    public void setUp() throws IOException {
+        storage = Mockito.mock(DemandStorage.class);
+        servlet = new DepartureServlet(storage);
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
 

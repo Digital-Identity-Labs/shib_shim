@@ -17,16 +17,16 @@ import static org.mockito.Mockito.when;
 
 public class ShabtiShimReturnTest {
 
-    private Jedis jedis;
+    private DemandStorage storage;
     private ReturnServlet servlet;
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
 
 
     @Before
-    public void setUp() {
-        jedis = Mockito.mock(Jedis.class);
-        servlet = new ReturnServlet(jedis);
+    public void setUp() throws IOException {
+        storage = Mockito.mock(DemandStorage.class);
+        servlet = new ReturnServlet(storage);
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
 
@@ -39,9 +39,9 @@ public class ShabtiShimReturnTest {
 
         final ObjectMapper mapper = new ObjectMapper();
         Demand demand = new Demand();
-        demand.externalAuthKey = "key";
+        demand.id = "key";
 
-        when(jedis.get("key")).thenReturn(mapper.writeValueAsString(demand));
+        when(storage.read("key")).thenReturn(demand);
 
         servlet.doGet(request, response);
 

@@ -34,6 +34,9 @@ public class DepartureServlet extends ShimServlet {
         super();
     }
 
+    public DepartureServlet(DemandStorage storage) throws IOException {
+        super(storage);
+    }
 
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {

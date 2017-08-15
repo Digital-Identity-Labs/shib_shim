@@ -29,6 +29,10 @@ public class ReturnServlet extends ShimServlet {
         super();
     }
 
+    public ReturnServlet(DemandStorage storage) throws IOException {
+        super(storage);
+    }
+
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
 
