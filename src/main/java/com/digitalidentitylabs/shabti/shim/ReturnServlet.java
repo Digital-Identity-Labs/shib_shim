@@ -19,7 +19,6 @@ import java.io.IOException;
         description = "Servlet to accept and process completed demand from an authentication service",
         urlPatterns = {"/Authn/Shim/Return"},
         initParams={
-                @WebInitParam(name="failPath",      value="/500"),
                 @WebInitParam(name="propertiesFile", value="shim.properties")
         }
 )
@@ -40,24 +39,10 @@ public class ReturnServlet extends ShimServlet {
 
         final Demand demand = storage.read(demandId);
 
-        HttpSession session = request.getSession();
-        session.setAttribute("conversationemyconv1", new ExternalAuthentication() {
-            @Override
-            protected void doStart(HttpServletRequest request) throws ExternalAuthenticationException {
-                // surely this needs to be real?
-            }
-        });
-
         try {
-
-            request.setAttribute(ExternalAuthentication.PRINCIPAL_NAME_KEY, demand.principal);
-
-            ExternalAuthentication.finishExternalAuthentication(demand.jobKey, request, response);
-
+            processor.authenticate(demand, request, response);
         } catch (ExternalAuthenticationException e) {
-
-            throw new ServletException(e);
-
+            throw new ServletException("Error authenticating external authentication details", e);
         }
 
     }
