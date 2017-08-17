@@ -1,21 +1,22 @@
 package com.digitalidentitylabs.shabti.shim;
 
-import net.shibboleth.idp.authn.ExternalAuthenticationException;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class ShimServlet extends HttpServlet {
 
     protected Properties properties = new Properties();
     protected DemandStorage storage = null;
     protected ShibDemandProcessor processor = new ShibDemandProcessor();
+
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     public void init() throws ServletException {
 
@@ -30,7 +31,7 @@ public abstract class ShimServlet extends HttpServlet {
 
             storage = storage == null ? getStorage(properties) : storage;
 
-
+            log.info("Here we go!");
 
         } catch (Exception e) {
             throw new ServletException("Error creating Shabti Shim servlet!", e);
@@ -54,18 +55,16 @@ public abstract class ShimServlet extends HttpServlet {
 
         DemandStorage demandStorage = null;
 
-        if (StringUtils.isBlank(props.getProperty("password"))) {
+        String  hostname = props.getProperty("redis_hostname");
+        Integer port     = Integer.parseInt(props.getProperty("redis_port"));
+        String  secret   = props.getProperty("password");
 
-            demandStorage = new DemandStorage("redis");
-                    //props.getProperty("redis_hostname")); //,
-                    //Integer.parseInt(props.getProperty("redis_port")));
-
+        if (StringUtils.isBlank(secret)) {
+            log.info("Connecting to Redis service {} on port {}", hostname, port );
+            demandStorage = new DemandStorage(hostname, port);
         } else {
-
-            demandStorage = new DemandStorage(
-                    props.getProperty("redis_hostname"),
-                    Integer.parseInt(props.getProperty("redis_port")),
-                    props.getProperty("password"));
+            log.info("Connecting to Redis service {} on port {} with password [XXXXXXXXXX]", hostname, port );
+            demandStorage = new DemandStorage(hostname, port, secret);
         }
 
         return demandStorage;
