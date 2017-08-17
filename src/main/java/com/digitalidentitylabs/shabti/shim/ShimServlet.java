@@ -56,14 +56,14 @@ public abstract class ShimServlet extends HttpServlet {
 
         if (StringUtils.isBlank(props.getProperty("password"))) {
 
-            demandStorage = new DemandStorage(
-                    props.getProperty("redis_host"),
-                    Integer.parseInt(props.getProperty("redis_port")));
+            demandStorage = new DemandStorage("redis");
+                    //props.getProperty("redis_hostname")); //,
+                    //Integer.parseInt(props.getProperty("redis_port")));
 
         } else {
 
             demandStorage = new DemandStorage(
-                    props.getProperty("redis_host"),
+                    props.getProperty("redis_hostname"),
                     Integer.parseInt(props.getProperty("redis_port")),
                     props.getProperty("password"));
         }

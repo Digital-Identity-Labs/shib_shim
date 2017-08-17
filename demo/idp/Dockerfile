@@ -1,4 +1,4 @@
-FROM digitalidentity/ishigaki:0.1.4
+FROM digitalidentity/ishigaki:0.1.5
 
 MAINTAINER pete@digitalidentity.labs.com
 

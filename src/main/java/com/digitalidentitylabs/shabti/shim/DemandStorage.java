@@ -22,6 +22,14 @@ public class DemandStorage {
 
     }
 
+    public DemandStorage(String host) {
+
+        this();
+
+        redisPool = new JedisPool(new JedisPoolConfig(), host);
+
+    }
+
     public DemandStorage(String host, int port) {
 
         this();
