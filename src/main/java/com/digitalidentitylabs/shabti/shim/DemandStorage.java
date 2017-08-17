@@ -63,7 +63,7 @@ public class DemandStorage {
 
         } finally {
 
-            redisPool.close();
+            redis.close();
 
         }
 
@@ -81,7 +81,7 @@ public class DemandStorage {
 
         } finally {
 
-            redisPool.close();
+            redis.close();
 
         }
 
@@ -101,7 +101,7 @@ public class DemandStorage {
 
         } finally {
 
-            redisPool.close();
+            redis.close();
 
         }
 
