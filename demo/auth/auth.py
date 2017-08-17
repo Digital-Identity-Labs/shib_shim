@@ -17,7 +17,7 @@ def login():
     demand['principal'] = principal
     r.set(token, json.dumps(demand))
     # There's definitely a better way to build a URL safely :-)
-    return redirect("https://idp.localhost.demo.university/idp/Authn/Shim/Return?token=" + token, code=302)
+    return redirect(demand['return_to'], code=302)
 
 
 @app.route("/<token>", methods=['GET'])
