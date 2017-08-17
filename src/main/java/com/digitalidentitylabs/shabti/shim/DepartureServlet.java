@@ -14,8 +14,10 @@ import org.apache.commons.lang.StringUtils;
 import redis.clients.jedis.*;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Properties;
 import java.io.InputStream;
+import java.net.URI;
 
 
 @WebServlet(
@@ -45,11 +47,23 @@ public class DepartureServlet extends ShimServlet {
 
             storage.write(demand);
 
-            response.sendRedirect(properties.getProperty("auth_url") + "/" + demand.id);
+            String authentication_url = buildAuthenticationURL(properties.getProperty("auth_url"), demand);
 
-        } catch (final ExternalAuthenticationException e) {
+            log.info("Redirecting to external authentication service at {} for demand {}", authentication_url, demand.id );
+
+            response.sendRedirect(authentication_url);
+
+        } catch (final Exception e) {
             throw new ServletException("Error preparing external authentication request", e);
         }
+    }
+
+    protected String buildAuthenticationURL(String baseURL, Demand demand) throws URISyntaxException {
+
+        URI url = new URI(baseURL + "/" + demand.id);
+        url = url.normalize();
+
+        return url.toString();
     }
 
 }
