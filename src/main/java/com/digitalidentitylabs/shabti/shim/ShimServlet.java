@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -12,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class ShimServlet extends HttpServlet {
 
-    protected Properties properties = new Properties();
+    protected Properties properties = null;
     protected DemandStorage storage = null;
     protected ShibDemandProcessor processor = new ShibDemandProcessor();
 
@@ -24,12 +25,8 @@ public abstract class ShimServlet extends HttpServlet {
 
             super.init();
 
-            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-            InputStream input = classLoader.getResourceAsStream(getInitParameter("propertiesFile"));
-            Properties properties = new Properties();
-            properties.load(input);
-
-            storage = storage == null ? getStorage(properties) : storage;
+            properties = properties == null ? setupProperties(getInitParameter("propertiesFile")) : properties;
+            storage    = storage    == null ? setupStorage(properties) : storage;
 
             log.info("Here we go!");
 
@@ -51,7 +48,20 @@ public abstract class ShimServlet extends HttpServlet {
 
     }
 
-    private DemandStorage getStorage(Properties props) {
+    protected Properties setupProperties(String propFile) throws IOException {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        InputStream input = classLoader.getResourceAsStream(propFile);
+        Properties properties = new Properties();
+        try {
+            properties.load(input);
+        } catch (IOException e) {
+            log.error("Error loading properties file {}!", propFile);
+            throw e;
+        }
+        return properties;
+    }
+
+    private DemandStorage setupStorage(Properties props) {
 
         DemandStorage demandStorage = null;
 
