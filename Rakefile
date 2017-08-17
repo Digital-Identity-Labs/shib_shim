@@ -25,6 +25,11 @@ namespace :demo do
 
   end
 
+  desc "Restart demo"
+  task :restart => ["demo:stop", "demo:start"] do
+    
+  end
+
   desc "View live Docker logs for demo"
   task :tail do
     cd "demo" do
