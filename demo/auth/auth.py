@@ -1,6 +1,9 @@
+from __future__ import print_function
 import json
 import redis
+import sys
 from flask import Flask, request, redirect
+
 
 
 app = Flask(__name__)
@@ -18,12 +21,18 @@ def login():
     r.set(token, json.dumps(demand))
     # There's definitely a better way to build a URL safely :-)
     #return redirect(demand['return_url'], code=302)
-    return redirect("https://idp.localhost.demo.university/idp/Authn/shim/return/" + token, code=302)
+    app.logger.info('%s is logging in', demand['principal'])
+    sys.stdout.flush()
+    #return redirect("https://idp.localhost.demo.university/idp/Authn/shim/return/" + token, code=302)
+    return redirect(demand['return_url'], code=302)
 
 
 @app.route("/<token>", methods=['GET'])
 def auth(token):
     data = r.get(token)
+    demand = json.loads(data)
+    app.logger.info('%s is the return_url', demand['return_url'])
+    sys.stdout.flush()
     return """
     <p>Welcome to auth:<p>
     <form action="/" method="post">
@@ -34,6 +43,9 @@ def auth(token):
     </form>
     """.format(token)
 
+@app.route("/favicon.ico", methods=['GET'])
+def icon():
+    return "", 404
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0')
