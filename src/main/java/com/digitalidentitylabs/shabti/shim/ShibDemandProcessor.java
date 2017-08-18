@@ -31,8 +31,7 @@ public class ShibDemandProcessor {
     }
 
     public void authenticate(Demand demand, HttpServletRequest request, HttpServletResponse response) throws ExternalAuthenticationException, IOException {
-
-        // Frankly I'm not sure what's happening here - a workaround, but why? I can't remember. TODO: Investigate, Fix/remove
+        
         HttpSession session = request.getSession();
 
         // Pass data from the Demand back into the request
