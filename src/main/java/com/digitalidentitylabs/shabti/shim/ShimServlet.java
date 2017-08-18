@@ -48,10 +48,23 @@ public abstract class ShimServlet extends HttpServlet {
 
     }
 
+    protected Properties defaultProperties() {
+
+        Properties defaults = new Properties();
+        defaults.setProperty("redis_hostname", "127.0.0.1");
+        defaults.setProperty("redis_port", "6379");
+        defaults.setProperty("redis_password", "");
+        defaults.setProperty("auth_url",   "/login/authn/new/");
+        defaults.setProperty("return_url", "/idp/Authn/shim/return/");
+        defaults.setProperty("x-check", "true");
+
+        return defaults;
+    }
+
     protected Properties setupProperties(String propFile) throws IOException {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         InputStream input = classLoader.getResourceAsStream(propFile);
-        Properties properties = new Properties();
+        Properties properties = new Properties(defaultProperties());
         try {
             properties.load(input);
         } catch (IOException e) {
