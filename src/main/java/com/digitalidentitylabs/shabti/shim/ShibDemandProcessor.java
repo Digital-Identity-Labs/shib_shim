@@ -34,12 +34,6 @@ public class ShibDemandProcessor {
 
         // Frankly I'm not sure what's happening here - a workaround, but why? I can't remember. TODO: Investigate, Fix/remove
         HttpSession session = request.getSession();
-        session.setAttribute("conversationemyconv1", new ExternalAuthentication() {
-            @Override
-            protected void doStart(HttpServletRequest request) throws ExternalAuthenticationException {
-                // surely this needs to be real?
-            }
-        });
 
         // Pass data from the Demand back into the request
         request.setAttribute(ExternalAuthentication.PRINCIPAL_NAME_KEY, demand.principal);
