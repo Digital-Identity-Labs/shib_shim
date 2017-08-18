@@ -45,6 +45,8 @@ public class DepartureServlet extends ShimServlet {
 
             Demand demand = processor.provision(request);
 
+            demand.returnURL = buildReturnURL(properties.getProperty("return_url"), demand, request);
+
             storage.write(demand);
 
             String authentication_url = buildAuthenticationURL(properties.getProperty("auth_url"), demand);
@@ -64,6 +66,17 @@ public class DepartureServlet extends ShimServlet {
         url = url.normalize();
 
         return url.toString();
+    }
+
+    protected String buildReturnURL(String baseURL, Demand demand, HttpServletRequest request) throws URISyntaxException {
+
+        if (baseURL.toLowerCase().startsWith("http")) {
+            baseURL = new URI(baseURL).normalize().toString();
+        } else {
+            baseURL = new URI(request.getScheme(), request.getServerName(), baseURL.toString()).normalize().toString();
+        }
+
+        return new URI(baseURL + "/" + demand.id).normalize().toString();
     }
 
 }

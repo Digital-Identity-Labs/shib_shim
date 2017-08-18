@@ -31,7 +31,7 @@ public class ShibDemandProcessor {
     }
 
     public void authenticate(Demand demand, HttpServletRequest request, HttpServletResponse response) throws ExternalAuthenticationException, IOException {
-        
+
         HttpSession session = request.getSession();
 
         // Pass data from the Demand back into the request
