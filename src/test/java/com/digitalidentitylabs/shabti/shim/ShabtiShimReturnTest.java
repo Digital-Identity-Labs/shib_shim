@@ -38,7 +38,7 @@ public class ShabtiShimReturnTest {
     public void test() throws IOException, ServletException {
 
         final ObjectMapper mapper = new ObjectMapper();
-        Demand demand = new Demand();
+        Demand demand = new IncomingDemand();
         demand.id = "key";
 
         when(storage.read("key")).thenReturn(demand);

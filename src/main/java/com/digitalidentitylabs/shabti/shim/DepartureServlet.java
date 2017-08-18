@@ -1,23 +1,13 @@
 package com.digitalidentitylabs.shabti.shim;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.annotation.WebInitParam;
-import javax.servlet.http.HttpServlet;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import net.shibboleth.idp.authn.ExternalAuthentication;
-import net.shibboleth.idp.authn.ExternalAuthenticationException;
-import org.apache.commons.lang.StringUtils;
-import redis.clients.jedis.*;
-
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.Properties;
-import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 
 @WebServlet(
@@ -51,7 +41,7 @@ public class DepartureServlet extends ShimServlet {
 
             String authentication_url = buildAuthenticationURL(properties.getProperty("auth_url"), demand);
 
-            log.info("Redirecting to external authentication service at {} for demand {}", authentication_url, demand.id );
+            log.info("Redirecting to external authentication service at {} for demand {}/{}", authentication_url, demand.id, demand.jobKey );
 
             response.sendRedirect(authentication_url);
 

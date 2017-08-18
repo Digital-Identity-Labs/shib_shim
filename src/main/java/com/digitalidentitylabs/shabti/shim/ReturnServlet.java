@@ -31,14 +31,22 @@ public class ReturnServlet extends ShimServlet {
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
 
+        final String token = extractTokenFromURL(request.getRequestURL().toString());
 
-
-        final String token =  extractTokenFromURL(request.getRequestURL().toString());
+        log.info("Authentication using demand {} has been requested...", token);
 
         final Demand demand = storage.read(token);
 
         try {
-            processor.authenticate(demand, request, response);
+
+            if (processor.isValid(demand)) {
+                log.info("Authenticating demand {}/{} for user {}", demand.id, demand.jobKey, demand.principal);
+                processor.authenticate(demand, request, response);
+            } else {
+                log.error("Invalid demand {}!", demand.id);
+                throw new ServletException("Invalid Demand!");
+            }
+
         } catch (ExternalAuthenticationException e) {
             throw new ServletException("Error authenticating external authentication details", e);
         }

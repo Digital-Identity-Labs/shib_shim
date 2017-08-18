@@ -28,7 +28,7 @@ public abstract class ShimServlet extends HttpServlet {
             properties = properties == null ? setupProperties(getInitParameter("propertiesFile")) : properties;
             storage    = storage    == null ? setupStorage(properties) : storage;
 
-            log.info("Here we go!");
+            log.info("External Authentication Shim service {} is available", getClass().toString());
 
         } catch (Exception e) {
             throw new ServletException("Error creating Shabti Shim servlet!", e);
@@ -83,10 +83,10 @@ public abstract class ShimServlet extends HttpServlet {
         String  secret   = props.getProperty("password");
 
         if (StringUtils.isBlank(secret)) {
-            log.info("Connecting to Redis service {} on port {}", hostname, port );
+            log.debug("Connecting to Redis service {} on port {}", hostname, port );
             demandStorage = new DemandStorage(hostname, port);
         } else {
-            log.info("Connecting to Redis service {} on port {} with password [XXXXXXXXXX]", hostname, port );
+            log.debug("Connecting to Redis service {} on port {} with password [XXXXXXXXXX]", hostname, port );
             demandStorage = new DemandStorage(hostname, port, secret);
         }
 

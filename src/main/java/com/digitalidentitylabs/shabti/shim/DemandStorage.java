@@ -5,6 +5,9 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.Protocol;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 
 public class DemandStorage {
@@ -12,7 +15,7 @@ public class DemandStorage {
     // Redis Pool that will, I think, be threadsafe...
     private static JedisPool redisPool = null;
 
-
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     public DemandStorage() {
 
@@ -77,7 +80,11 @@ public class DemandStorage {
         try {
 
             redis = redisPool.getResource();
-            redis.setex(demand.id, 60, demand.toJSON());
+            String jsonText = demand.toJSON();
+
+            redis.setex(demand.id, 60, jsonText);
+
+            log.info("Writing JSON to storage: {}", jsonText); // TODO: Change to debug
 
         } finally {
 
@@ -95,9 +102,18 @@ public class DemandStorage {
         try {
 
             redis = redisPool.getResource();
+
             String jsonText = redis.get(token);
 
-            return new Demand(jsonText);
+            log.info("Read JSON from storage: {}", jsonText); // TODO: Change to debug
+
+
+            if (jsonText == null) {
+                log.warn("Demand not found, returning MissingDemand for token {}", token);
+                return new MissingDemand();
+            }
+
+            return new IncomingDemand(jsonText);
 
         } finally {
 

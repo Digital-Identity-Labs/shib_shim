@@ -15,7 +15,7 @@ public class ShibDemandProcessor {
 
     public Demand provision(HttpServletRequest request) throws ExternalAuthenticationException {
 
-        final Demand demand = new Demand();
+        final Demand demand = new OutgoingDemand();
 
         // Start the external authentication process and get an ID for this authentication job
         demand.jobKey = ExternalAuthentication.startExternalAuthentication(request);
@@ -28,6 +28,11 @@ public class ShibDemandProcessor {
 
         return demand;
 
+    }
+
+    public boolean isValid(Demand demand) {
+
+        return true;
     }
 
     public void authenticate(Demand demand, HttpServletRequest request, HttpServletResponse response) throws ExternalAuthenticationException, IOException {

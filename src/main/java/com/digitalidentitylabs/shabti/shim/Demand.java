@@ -17,7 +17,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 
-public class Demand {
+public abstract class Demand {
 
     @JsonProperty("token")             protected String  id           = null;
     @JsonProperty("auth_key")          protected String  jobKey       = null;
@@ -31,11 +31,6 @@ public class Demand {
 
     @JsonProperty("created_at")        protected DateTime createdAt  = null;
 
-    @JsonProperty("user_address")      protected String  userAddress  = null;
-    @JsonProperty("agent_hash")        protected String  agentHash    = null;
-    @JsonProperty("site_domain")       protected String  siteDomain   = null;
-    @JsonProperty("server_tag")        protected String  serverTag    = "service";
-    @JsonProperty("component")         protected String  component    = "core";
     @JsonProperty("protocol")          protected String  protocol     = "shibboleth";
     @JsonProperty("version")           protected String  version      = "1.0.0";
     @JsonProperty("return_url")        protected String  returnURL    = null;
@@ -47,27 +42,6 @@ public class Demand {
     // Build new object from request
     public Demand() {
 
-        mapper.registerModule(new JodaModule());
-        mapper.configure(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS , false);
-
-        // Need a better source of random uniqueness than this, I think...
-        String uuid  = UUID.randomUUID().toString();
-        this.id = DigestUtils.md5Hex(uuid);
-
-        // Metadata
-        this.createdAt =  new DateTime(); //.toString(javascriptDateFormat);
-
-    }
-
-    public Demand(String jsonText) {
-        this();
-        this.id        = null;
-        this.createdAt = null;
-        try {
-            mapper.readerForUpdating(this).readValue(jsonText);
-        } catch (java.io.IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public String toJSON() {
