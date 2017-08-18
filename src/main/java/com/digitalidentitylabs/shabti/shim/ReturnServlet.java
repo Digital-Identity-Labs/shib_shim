@@ -1,18 +1,14 @@
 package com.digitalidentitylabs.shabti.shim;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import net.shibboleth.idp.authn.ExternalAuthentication;
 import net.shibboleth.idp.authn.ExternalAuthenticationException;
-import redis.clients.jedis.Jedis;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 @WebServlet(
         name = "ReturnServlet",
@@ -35,9 +31,11 @@ public class ReturnServlet extends ShimServlet {
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
 
-        final String demandId = request.getParameter("token");
 
-        final Demand demand = storage.read(demandId);
+
+        final String token =  extractTokenFromURL(request.getRequestURL().toString());
+
+        final Demand demand = storage.read(token);
 
         try {
             processor.authenticate(demand, request, response);
@@ -47,6 +45,20 @@ public class ReturnServlet extends ShimServlet {
 
     }
 
+    protected String extractTokenFromURL(String raw_url) {
+
+        URI uri = null;
+        try {
+            uri = new URI(raw_url);
+        } catch (URISyntaxException e) {
+            return "error";
+        }
+        String[] segments = uri.getPath().split("/");
+        String token = segments[segments.length-1];
+
+        return token;
+
+    }
 
 
 }
