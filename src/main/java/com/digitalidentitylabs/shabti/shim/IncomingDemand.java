@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import java.util.UUID;
 
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -25,7 +24,7 @@ public class IncomingDemand extends Demand {
     @JsonProperty("agent_hash")        protected String  agentHash    = null;
     @JsonProperty("site_domain")       protected String  siteDomain   = null;
 
-
+    @JsonIgnoreProperties(ignoreUnknown = true)
 
     // Build new object from request
     public IncomingDemand() {
@@ -46,5 +45,12 @@ public class IncomingDemand extends Demand {
             e.printStackTrace();
         }
     }
-    
+
+    @Override
+    public boolean isValid() {
+        if (principal == null) { return false; };
+        return true;
+    }
+
+
 }

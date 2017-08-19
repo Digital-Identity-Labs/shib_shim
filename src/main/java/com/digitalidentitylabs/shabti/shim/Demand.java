@@ -7,10 +7,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import java.util.UUID;
 
 import com.fasterxml.jackson.datatype.joda.JodaModule;
-import org.apache.commons.codec.digest.DigestUtils;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -35,7 +33,9 @@ public abstract class Demand {
     @JsonProperty("version")           protected String  version      = "1.0.0";
     @JsonProperty("return_url")        protected String  returnURL    = null;
 
-    private   DateTimeFormatter javascriptDateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z");
+    @JsonIgnoreProperties(ignoreUnknown = true)
+
+    protected DateTimeFormatter javascriptDateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z");
     protected ObjectMapper mapper = new ObjectMapper();
 
 
@@ -55,8 +55,8 @@ public abstract class Demand {
         return json;
     }
 
+    @JsonIgnore public boolean isValid() {
+        return false;
+    }
+
 }
-
-//            final ObjectMapper mapper = new ObjectMapper();
-
-//            return mapper.readValue(jsonText, Demand.class);

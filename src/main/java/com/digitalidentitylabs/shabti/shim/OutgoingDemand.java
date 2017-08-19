@@ -8,9 +8,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.UUID;
+import org.apache.commons.codec.digest.DigestUtils;
 
 import com.fasterxml.jackson.datatype.joda.JodaModule;
-import org.apache.commons.codec.digest.DigestUtils;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -18,6 +18,7 @@ import org.joda.time.format.DateTimeFormatter;
 
 public class OutgoingDemand extends Demand {
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
 
     // Build new object from request
     public OutgoingDemand() {
@@ -32,9 +33,14 @@ public class OutgoingDemand extends Demand {
         this.id = DigestUtils.md5Hex(uuid);
 
         // Metadata
-        this.createdAt =  new DateTime(); //.toString(javascriptDateFormat);
+        this.createdAt = new DateTime();//.toString(javascriptDateFormat);
 
     }
 
+    @Override @JsonIgnore
+    public boolean isValid() {
+        if (principal != null) { return false; };
+        return true;
+    }
 
 }

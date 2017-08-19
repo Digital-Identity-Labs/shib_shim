@@ -18,6 +18,7 @@ import org.joda.time.format.DateTimeFormatter;
 
 public class MissingDemand extends Demand {
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
 
     // Build new object from request
     public MissingDemand() {
@@ -25,5 +26,9 @@ public class MissingDemand extends Demand {
         super();
     }
 
+    @Override
+    public boolean isValid() {
+        return false;
+    }
 
 }
