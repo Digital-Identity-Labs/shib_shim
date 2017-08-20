@@ -29,7 +29,7 @@ public abstract class Demand {
 
     @JsonProperty("force")             protected Boolean forceAuthn   = false;
     @JsonProperty("passive")           protected Boolean isPassive    = false;
-    @JsonProperty("method")            protected String  authnMethod  = null;
+    @JsonProperty("authn_method")      protected String  authnMethod  = null;
     @JsonProperty("relying_party")     protected String  relyingParty = "";
 
     @JsonProperty("principal")         protected String  principal    = null;

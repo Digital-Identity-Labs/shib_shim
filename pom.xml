@@ -144,7 +144,7 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
-            
+
         </plugins>
     </build>
 
