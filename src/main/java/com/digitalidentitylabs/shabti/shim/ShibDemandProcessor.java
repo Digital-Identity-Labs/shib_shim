@@ -9,7 +9,9 @@ import javax.servlet.http.HttpSession;
 import net.shibboleth.idp.authn.ExternalAuthentication;
 import net.shibboleth.idp.authn.ExternalAuthenticationException;
 
+import java.util.StringTokenizer;
 import java.io.IOException;
+import java.lang.System;
 
 public class ShibDemandProcessor {
 
@@ -26,6 +28,12 @@ public class ShibDemandProcessor {
         demand.isPassive = Boolean.parseBoolean(request.getAttribute(ExternalAuthentication.PASSIVE_AUTHN_PARAM).toString());
         demand.forceAuthn = Boolean.parseBoolean(request.getAttribute(ExternalAuthentication.FORCE_AUTHN_PARAM).toString());
 
+        // Information about the user/agent
+        demand.userAddress = getClientIpAddress(request);
+
+        // Information about this service
+        demand.siteDomain  = request.getServerName();
+        
         return demand;
 
     }
@@ -70,4 +78,15 @@ public class ShibDemandProcessor {
         // Pass control back to the Shibboleth IdP
         ExternalAuthentication.finishExternalAuthentication(demand.jobKey, request, response);
     }
+
+    private static String getClientIpAddress(HttpServletRequest request) {
+        String xForwardedForHeader = request.getHeader("X-Forwarded-For");
+        if (xForwardedForHeader == null) {
+            return request.getRemoteAddr();
+        } else {
+            return new StringTokenizer(xForwardedForHeader, ",").nextToken().trim();
+        }
+    }
+
+
 }
