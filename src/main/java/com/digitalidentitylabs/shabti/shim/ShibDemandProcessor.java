@@ -33,7 +33,7 @@ public class ShibDemandProcessor {
 
         // Information about this service
         demand.siteDomain  = request.getServerName();
-        
+
         return demand;
 
     }
