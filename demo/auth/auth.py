@@ -18,6 +18,7 @@ def login():
     principal = request.form['principal']
     demand = json.loads(r.get(token))
     demand['principal'] = principal
+    demand['x-ignore']  = "not relevant"
     r.set(token, json.dumps(demand))
     # There's definitely a better way to build a URL safely :-)
     #return redirect(demand['return_url'], code=302)
