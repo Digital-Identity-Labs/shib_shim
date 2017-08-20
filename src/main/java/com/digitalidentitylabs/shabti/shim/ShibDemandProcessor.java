@@ -30,22 +30,44 @@ public class ShibDemandProcessor {
 
     }
 
-    public boolean isValid(Demand demand) {
-
+    public boolean isSatisfied(Demand demand) {
+        if (!demand.isValid()) { return false; }
         return true;
     }
 
-    public void authenticate(Demand demand, HttpServletRequest request, HttpServletResponse response) throws ExternalAuthenticationException, IOException {
+    public void authnSuccess(Demand demand, HttpServletRequest request) throws ExternalAuthenticationException, IOException {
+
+        if (demand.state() != Demand.DemandState.ACCEPTED ) {
+            throw new IllegalArgumentException("Demand has not been accepted and cannot be used for authentication!");
+        }
 
         HttpSession session = request.getSession();
 
         // Pass data from the Demand back into the request
         request.setAttribute(ExternalAuthentication.PRINCIPAL_NAME_KEY, demand.principal);
-
-        // Pass control back to the Shibboleth IdP
-        ExternalAuthentication.finishExternalAuthentication(demand.jobKey, request, response);
+        request.setAttribute(ExternalAuthentication.AUTHENTICATION_INSTANT_KEY, demand.decidedAt);
+        request.setAttribute(ExternalAuthentication.DONOTCACHE_KEY, demand.doNotCache);
+        request.setAttribute(ExternalAuthentication.PREVIOUSRESULT_KEY, false);
 
     }
 
+    public void authnError(Demand demand, HttpServletRequest request) throws ExternalAuthenticationException, IOException {
 
+        if (demand.state() != Demand.DemandState.REJECTED ) {
+            throw new IllegalArgumentException("Demand has not been accepted and cannot be used for authentication!");
+        }
+
+        HttpSession session = request.getSession();
+
+        // Pass data from the Demand back into the request
+        request.setAttribute(ExternalAuthentication.AUTHENTICATION_ERROR_KEY,   demand.errorMessage);
+        request.setAttribute(ExternalAuthentication.AUTHENTICATION_INSTANT_KEY, demand.decidedAt);
+        request.setAttribute(ExternalAuthentication.DONOTCACHE_KEY, true);
+    }
+
+
+    public void finish(Demand demand, HttpServletRequest request, HttpServletResponse response) throws ExternalAuthenticationException, IOException  {
+        // Pass control back to the Shibboleth IdP
+        ExternalAuthentication.finishExternalAuthentication(demand.jobKey, request, response);
+    }
 }

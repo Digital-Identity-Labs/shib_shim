@@ -31,4 +31,8 @@ public class MissingDemand extends Demand {
         return false;
     }
 
+    @JsonIgnore @Override public DemandState state() {
+        return DemandState.MISSING;
+    }
+
 }

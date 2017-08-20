@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+
 import java.util.UUID;
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -16,9 +17,10 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OutgoingDemand extends Demand {
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
+
 
     // Build new object from request
     public OutgoingDemand() {
@@ -43,4 +45,8 @@ public class OutgoingDemand extends Demand {
         return true;
     }
 
+    @JsonIgnore @Override public DemandState state() {
+        if (!isValid()) { return DemandState.INVALID; }
+        return DemandState.WAITING;
+    }
 }

@@ -39,16 +39,33 @@ public class ReturnServlet extends ShimServlet {
 
         try {
 
-            if (processor.isValid(demand)) {
+            if (processor.isSatisfied(demand)) {
                 log.info("Authenticating demand {}/{} for user {}", demand.id, demand.jobKey, demand.principal);
-                processor.authenticate(demand, request, response);
+                processor.authnSuccess(demand, request);
             } else {
-                log.error("Invalid demand {}!", demand.id);
-                throw new ServletException("Invalid Demand!");
+
+                switch (demand.state()){
+                    case REJECTED:
+                        log.error("Rejected authentication demand {} - {}", demand.id, demand.errorMessage);
+                        processor.authnError(demand, request);
+                        break;
+                    case MISSING:
+                        log.error("Expired/missing demand {}!", demand.id);
+                        throw new ServletException("Expired Demand!");
+                    default:
+                        log.error("Invalid demand {}!", demand.id);
+                        throw new ServletException("Invalid Demand!");
+                }
+
+
             }
+
+            processor.finish(demand, request, response);
 
         } catch (ExternalAuthenticationException e) {
             throw new ServletException("Error authenticating external authentication details", e);
+        } finally {
+            storage.delete(demand);
         }
 
     }

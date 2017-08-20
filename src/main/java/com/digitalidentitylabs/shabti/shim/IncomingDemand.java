@@ -15,16 +15,18 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class IncomingDemand extends Demand {
+
+    @JsonProperty("dnc")               protected Boolean doNotCache  = true;
+
 
     @JsonProperty("server_tag")        protected String  serverTag    = "service";
     @JsonProperty("component")         protected String  component    = "core";
 
     @JsonProperty("user_address")      protected String  userAddress  = null;
-    @JsonProperty("agent_hash")        protected String  agentHash    = null;
     @JsonProperty("site_domain")       protected String  siteDomain   = null;
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
 
     // Build new object from request
     public IncomingDemand() {
@@ -52,5 +54,11 @@ public class IncomingDemand extends Demand {
         return true;
     }
 
+    @JsonIgnore @Override public DemandState state() {
+        if (!isValid()) { return DemandState.INVALID; }
+        if (!errorMessage.toString().isEmpty()) { return DemandState.REJECTED; }
+        if (!principal.toString().isEmpty())    { return DemandState.ACCEPTED; }
+        return DemandState.INVALID;
+    }
 
 }

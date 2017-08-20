@@ -75,6 +75,11 @@ public class DemandStorage {
 
     public void write(Demand demand) {
 
+        if (!demand.isValid()) {
+            log.error("Demand {}/{} is invalid and cannot be written! Dump: {}", demand.id, demand.jobKey, demand.toJSON());
+            throw new IllegalArgumentException("Demand is invalid and cannot be written!");
+        }
+
         Jedis redis = null;
 
         try {
