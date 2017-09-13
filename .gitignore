@@ -7,8 +7,6 @@
 
 /.DS_Store
 
-/.idea/workspace.xml
-
 /target/shib_shim/
 
 /target/
@@ -19,22 +17,8 @@
 
 /shabti-shim-war/shabti-shim-war.iml
 
-/.idea/copyright/profiles_settings.xml
+/.idea
+*.iml
 /shib_shim.iml
-/shabti-shim-libs/shabti-shim-libs.iml
-/.idea/misc.xml
-/.idea/libraries/Maven__redis_clients_jedis_2_2_1.xml
-/.idea/libraries/Maven__org_slf4j_slf4j_log4j12_1_7_5.xml
-/.idea/libraries/Maven__org_slf4j_slf4j_api_1_7_5.xml
-/.idea/libraries/Maven__org_mockito_mockito_all_1_8_4.xml
-/.idea/libraries/Maven__org_hamcrest_hamcrest_core_1_3.xml
-/.idea/libraries/Maven__log4j_log4j_1_2_17.xml
-/.idea/libraries/Maven__junit_junit_4_11.xml
-/.idea/libraries/Maven__joda_time_joda_time_2_3.xml
-/.idea/libraries/Maven__javax_servlet_servlet_api_2_5.xml
-/.idea/libraries/Maven__commons_pool_commons_pool_1_6.xml
-/.idea/libraries/Maven__commons_codec_commons_codec_1_2.xml
-/.idea/libraries/Maven__com_fasterxml_jackson_datatype_jackson_datatype_joda_2_1_1.xml
-/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_databind_2_1_1.xml
-/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_core_2_3_0.xml
-/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_annotations_2_1_1.xml
+/demo/frontend/certs/*.pem
+/shit
