@@ -1,0 +1,61 @@
+version: '3'
+services:
+  frontend:
+    image: traefik:latest
+    command: --web --docker --docker.domain=docker.localhost --logLevel=DEBUG
+    ports:
+      - "443:443"
+      - "8080:8080"
+      - "8433:8443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./frontend/traefik.toml:/traefik.toml
+      - ./frontend/certs:/certs
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    labels:
+      - "traefik.enable=false"
+
+  sp:
+    image: digitalidentity/rasp
+    volumes:
+      - ./sp/shibboleth:/etc/shibboleth
+      - ./sp/html:/var/www/html
+      - ./sp/000-default.conf:/etc/apache2/sites-available/000-default.conf
+    labels:
+      - "traefik.backend=sp"
+      - "traefik.frontend.passHostHeader=true"
+      - "traefik.frontend.rule=Host:sp.localhost.federated-example.org"
+      - "traefik.frontend.entryPoints=https"
+      - "traefik.port=80"
+      - "traefik.protocol=http"
+
+  auth:
+    build:
+      context: auth
+    labels:
+      - "traefik.backend=auth"
+      - "traefik.frontend.passHostHeader=true"
+      - "traefik.frontend.rule=Host:auth.localhost.demo.university"
+      - "traefik.frontend.entryPoints=https"
+      - "traefik.port=5000"
+      - "traefik.protocol=http"
+
+  idp:
+    build:
+      context: idp
+    environment:
+      - JETTY_BROWSER_SSL_KEYSTORE_PASSWORD=abc123
+      - JETTY_BACKCHANNEL_SSL_KEYSTORE_PASSWORD=abc
+    labels:
+      - "traefik.backend=idp"
+      - "traefik.frontend.passHostHeader=true"
+      - "traefik.frontend.rule=Host:idp.localhost.demo.university"
+      - "traefik.frontend.entryPoints=https"
+      - "traefik.port=8080"
+      - "traefik.protocol=http"
+
+
