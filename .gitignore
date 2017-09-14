@@ -18,7 +18,7 @@
 /shabti-shim-war/shabti-shim-war.iml
 
 /.idea
+.idea/*
 *.iml
 /shib_shim.iml
 /demo/frontend/certs/*.pem
-/shit
