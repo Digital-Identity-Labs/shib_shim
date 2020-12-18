@@ -1,6 +1,6 @@
 package com.digitalidentitylabs.shabti.shim;
 
-import org.apache.commons.lang.StringUtils;
+//import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -25,7 +25,6 @@ public abstract class ShimServlet extends HttpServlet {
     public void init() throws ServletException {
 
         try {
-
             super.init();
 
             properties = properties == null ? setupProperties(getInitParameter("propertiesFile")) : properties;
@@ -85,7 +84,7 @@ public abstract class ShimServlet extends HttpServlet {
         Integer port     = Integer.parseInt(props.getProperty("redis_port"));
         String  secret   = props.getProperty("password");
 
-        if (StringUtils.isBlank(secret)) {
+        if (secret == null || secret.equals("")) {
             log.debug("Connecting to Redis service {} on port {}", hostname, port );
             demandStorage = new DemandStorage(hostname, port);
         } else {
