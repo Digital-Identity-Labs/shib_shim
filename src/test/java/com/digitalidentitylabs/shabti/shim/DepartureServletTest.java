@@ -2,6 +2,8 @@ package com.digitalidentitylabs.shabti.shim;
 
 import net.shibboleth.idp.authn.ExternalAuthentication;
 import net.shibboleth.idp.authn.ExternalAuthenticationException;
+import net.shibboleth.idp.authn.context.ExternalAuthenticationContext;
+import org.opensaml.profile.context.ProfileRequestContext;
 import org.junit.Before;
 import org.mockito.Mockito;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -9,6 +11,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import redis.clients.jedis.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
@@ -38,8 +41,12 @@ public class DepartureServletTest {
         // session... this was unpicked by trial and error -- no docs?
         final HttpSession session = request.getSession();
         session.setAttribute("conversationmyconv1", new ExternalAuthentication() {
-            @Override
+            //@Override
             protected void doStart(HttpServletRequest request) throws ExternalAuthenticationException {
+                // Seems to pass with this doing nothing... whatever
+            }
+            @Override
+            protected void doFinish(HttpServletRequest request, HttpServletResponse response, ProfileRequestContext profileContext,ExternalAuthenticationContext externalAuthContext) throws ExternalAuthenticationException {
                 // Seems to pass with this doing nothing... whatever
             }
         });
@@ -48,7 +55,7 @@ public class DepartureServletTest {
         request.setAttribute(ExternalAuthentication.FORCE_AUTHN_PARAM, true);
         request.setAttribute(ExternalAuthentication.PASSIVE_AUTHN_PARAM, true);
         request.setAttribute(ExternalAuthentication.RELYING_PARTY_PARAM, "http://example.com/rp");
-        request.setAttribute(ExternalAuthentication.AUTHN_METHOD_PARAM, "http://example.com/password");
+//        request.setAttribute(ExternalAuthentication.AUTHN_METHOD_PARAM, "http://example.com/password");
     }
 
 //    @Test
