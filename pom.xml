@@ -5,7 +5,7 @@
     <artifactId>shabti-shim</artifactId>
     <packaging>jar</packaging>
     <name>Shabti Shim Libraries</name>
-    <version>1.0.0</version>
+    <version>2.1.0</version>
     <url>http://maven.apache.org</url>
 
     <repositories>
@@ -54,7 +54,7 @@
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
-            <version>2.9.0</version>
+            <version>3.4.0</version>
             <type>jar</type>
         </dependency>
         <dependency>
@@ -81,6 +81,14 @@
         </dependency>
 
     </dependencies>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/digital-identity-labs/shib_shim</url>
+        </repository>
+    </distributionManagement>
 
     <dependencyManagement>
         <dependencies>
@@ -139,6 +147,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
                 <!--<configuration>-->
                     <!--<source>11</source>-->
                     <!--<target>11</target>-->
@@ -147,6 +156,16 @@
 
         </plugins>
     </build>
+
+
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/digital-identity-labs/shib_shim</url>
+        </repository>
+    </distributionManagement>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
