@@ -88,10 +88,6 @@ public abstract class ShimServlet extends HttpServlet {
         Integer port = Integer.parseInt(props.getProperty("redis_port"));
         String secret = props.getProperty("password");
 
-        log.info("Hostname: {}", hostname);
-        log.info("port: {}", port);
-        log.info("secret: {}", secret);
-
         if (secret == null || secret.equals("")) {
             log.debug("Connecting to Redis service {} on port {}", hostname, port);
             demandStorage = new DemandStorage(hostname, port);

@@ -84,15 +84,9 @@ public class DemandStorage {
 
         try {
 
-            log.info("A");
-
             redis = redisPool.getResource();
 
-            log.info("redis: {}", redis);
-
             String jsonText = demand.toJSON();
-
-            log.info("json: {}", jsonText);
 
             redis.setex(demand.id, 60, jsonText);
 

@@ -33,11 +33,6 @@ public class DepartureServlet extends ShimServlet {
 
         try {
 
-            log.info("Properties:");
-            log.info("are: {}", properties);
-            log.info("url1: {}", properties.getProperty("return_url"));
-            log.info("url2: {}", properties.getProperty("auth_url"));
-
             Demand demand = processor.provision(request);
 
             demand.returnURL = buildReturnURL(properties.getProperty("return_url"), demand, request);
