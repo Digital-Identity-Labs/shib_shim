@@ -28,7 +28,7 @@ public abstract class ShimServlet extends HttpServlet {
             super.init();
 
             properties = properties == null ? setupProperties(getInitParameter("propertiesFile")) : properties;
-            storage    = storage    == null ? setupStorage(properties) : storage;
+            storage = storage == null ? setupStorage(properties) : storage;
 
             log.info("External Authentication Shim service {} is available", getClass().toString());
 
@@ -56,7 +56,7 @@ public abstract class ShimServlet extends HttpServlet {
         defaults.setProperty("redis_hostname", "127.0.0.1");
         defaults.setProperty("redis_port", "6379");
         defaults.setProperty("redis_password", "");
-        defaults.setProperty("auth_url",   "/login/authn/new/");
+        defaults.setProperty("auth_url", "/login/authn/new/");
         defaults.setProperty("return_url", "/idp/Authn/shim/return/");
         defaults.setProperty("x-check", "true");
 
@@ -68,7 +68,11 @@ public abstract class ShimServlet extends HttpServlet {
         InputStream input = classLoader.getResourceAsStream(propFile);
         Properties properties = new Properties(defaultProperties());
         try {
-            properties.load(input);
+            if (input != null) {
+                properties.load(input);
+            } else {
+                defaultProperties();
+            }
         } catch (IOException e) {
             log.error("Error loading properties file {}!", propFile);
             throw e;
@@ -80,22 +84,25 @@ public abstract class ShimServlet extends HttpServlet {
 
         DemandStorage demandStorage = null;
 
-        String  hostname = props.getProperty("redis_hostname");
-        Integer port     = Integer.parseInt(props.getProperty("redis_port"));
-        String  secret   = props.getProperty("password");
+        String hostname = props.getProperty("redis_hostname");
+        Integer port = Integer.parseInt(props.getProperty("redis_port"));
+        String secret = props.getProperty("password");
+
+        log.info("Hostname: {}", hostname);
+        log.info("port: {}", port);
+        log.info("secret: {}", secret);
 
         if (secret == null || secret.equals("")) {
-            log.debug("Connecting to Redis service {} on port {}", hostname, port );
+            log.debug("Connecting to Redis service {} on port {}", hostname, port);
             demandStorage = new DemandStorage(hostname, port);
         } else {
-            log.debug("Connecting to Redis service {} on port {} with password [XXXXXXXXXX]", hostname, port );
+            log.debug("Connecting to Redis service {} on port {} with password [XXXXXXXXXX]", hostname, port);
             demandStorage = new DemandStorage(hostname, port, secret);
         }
 
         return demandStorage;
 
     }
-
 
 
 }

@@ -15,7 +15,7 @@ import java.net.URISyntaxException;
         description = "Servlet to accept and process completed demand from an authentication service",
         urlPatterns = {"/Authn/shim/return/*"},
         initParams={
-                @WebInitParam(name="propertiesFile", value="shim.properties")
+                @WebInitParam(name="propertiesFile", value= "shim.properties")
         }
 )
 public class ReturnServlet extends ShimServlet {
