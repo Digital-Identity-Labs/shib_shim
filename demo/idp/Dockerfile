@@ -1,16 +1,20 @@
-FROM digitalidentity/ishigaki:0.1.5
+FROM ghcr.io/digital-identity-labs/ishigaki:2.1.0-base
 
-MAINTAINER pete@digitalidentity.labs.com
+LABEL description="Indiid Primary SAML IdP" \
+      maintainer="pete@digitalidentitylabs.com"
 
-ADD optfs/ /opt/
+ENV IDP_HOSTNAME=idp.indiid.net \
+    IDP_ID=https://indiid.net/idp/shibboleth \
+    IDP_SCOPE=indiid.net \
+    WRITE_MD=0
 
-USER root
-RUN keytool -keystore /opt/shibboleth-idp/credentials/idp-browser.p12 \
-    -alias jetty -genkey -storetype PKCS12 -keyalg RSA \
-    -storepass abc123 -keypass abc123 \
-    -dname "cn=localhost, ou=IT, o=Continuent, c=US" -noprompt
+ARG MODULES="idp.admin.Hello,idp.authn.External"
 
-RUN /opt/shibboleth-idp/bin/build.sh
+COPY optfs /opt
 
+RUN for plugin in $PLUGINS; do $IDP_HOME/bin/plugin.sh -i $plugin ; done && \
+    $IDP_HOME/bin/module.sh -i $MODULES ; $IDP_HOME/bin/module.sh -e $MODULES && \
+    rm -rf $IDP_HOME/war/*
 
-USER jetty
+RUN cd $IDP_HOME && ./bin/build.sh -Didp.target.dir=$IDP_HOME
+

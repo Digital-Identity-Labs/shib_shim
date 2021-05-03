@@ -1,16 +1,25 @@
 version: '3'
 services:
   frontend:
-    image: traefik:latest
-    command: --web --docker --docker.domain=docker.localhost --logLevel=DEBUG
+    image: traefik:v2.3.2
+    restart: always
     ports:
       - "443:443"
-      - "8080:8080"
-      - "8433:8443"
+      - "9443:9443"
+    environment:
+      LEGO_CA_CERTIFICATES: "/ica_root_ca.pem"
+    command:
+      - --api.insecure=false
+      - --api.dashboard=true
+      - --api.debug=false
+      - --log.level=INFO
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.network=web
+      - --entrypoints.web-secured.address=:443
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./frontend/traefik.toml:/traefik.toml
       - ./frontend/certs:/certs
+      - /var/run/docker.sock:/var/run/docker.sock:ro
 
   redis:
     image: redis
@@ -26,24 +35,28 @@ services:
       - ./sp/html:/var/www/html
       - ./sp/000-default.conf:/etc/apache2/sites-available/000-default.conf
     labels:
-      - "traefik.backend=sp"
-      - "traefik.frontend.passHostHeader=true"
-      - "traefik.frontend.rule=Host:sp.localhost.federated-example.org"
-      - "traefik.frontend.entryPoints=https"
+      - "traefik.enable=true"
+      - "traefik.http.routers.sp.entrypoints=web-secured"
+      - "traefik.http.routers.sp.rule=Host(`sp.localhost.federated-example.org`)"
+      - "traefik.http.routers.sp.tls=true"
+      - "traefik.http.routers.sp.tls.certresolver=ica"
+      - "traefik.http.routers.sp.tls.domains[0].main=sp.localhost.federated-example.org"
+      - "traefik.http.services.sp.loadbalancer.server.port=80"
       - "traefik.port=80"
-      - "traefik.protocol=http"
-
+      - "traefik.default.protocol=http"
   auth:
     build:
       context: auth
     labels:
-      - "traefik.backend=auth"
-      - "traefik.frontend.passHostHeader=true"
-      - "traefik.frontend.rule=Host:auth.localhost.demo.university"
-      - "traefik.frontend.entryPoints=https"
+      - "traefik.enable=true"
+      - "traefik.http.routers.auth.entrypoints=web-secured"
+      - "traefik.http.routers.auth.rule=Host(`auth.localhost.demo.university`)"
+      - "traefik.http.routers.auth.tls=true"
+      - "traefik.http.routers.auth.tls.certresolver=ica"
+      - "traefik.http.routers.auth.tls.domains[0].main=auth.localhost.demo.university"
+      - "traefik.http.services.auth.loadbalancer.server.port=5000"
       - "traefik.port=5000"
-      - "traefik.protocol=http"
-
+      - "traefik.default.protocol=http"
   idp:
     build:
       context: idp
@@ -51,11 +64,13 @@ services:
       - JETTY_BROWSER_SSL_KEYSTORE_PASSWORD=abc123
       - JETTY_BACKCHANNEL_SSL_KEYSTORE_PASSWORD=abc
     labels:
-      - "traefik.backend=idp"
-      - "traefik.frontend.passHostHeader=true"
-      - "traefik.frontend.rule=Host:idp.localhost.demo.university"
-      - "traefik.frontend.entryPoints=https"
+      - "traefik.enable=true"
+      - "traefik.http.routers.idp.entrypoints=web-secured"
+      - "traefik.http.routers.idp.rule=Host(`idp.localhost.demo.university`)"
+      - "traefik.http.routers.idp.tls=true"
+      - "traefik.http.routers.idp.tls.certresolver=ica"
+      - "traefik.http.routers.idp.tls.domains[0].main=idp.localhost.demo.university"
+      - "traefik.http.services.idp.loadbalancer.server.port=8080"
       - "traefik.port=8080"
-      - "traefik.protocol=http"
-
+      - "traefik.default.protocol=http"
 

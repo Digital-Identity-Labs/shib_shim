@@ -28,12 +28,13 @@
 ##
 <!DOCTYPE html>
 <html>
-  	<head>
-    	<meta charset="utf-8">
-    	<title>#springMessageText("idp.title", "Web Login Service")</title>
-    	<link rel="stylesheet" type="text/css" href="$request.getContextPath()/css/main.css">
-  	</head>
-  	<body>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+        <title>#springMessageText("idp.title", "Web Login Service")</title>
+        <link rel="stylesheet" type="text/css" href="$request.getContextPath()/css/main.css">
+    </head>
+    <body>
     <div class="wrapper">
       <div class="container">
         <header>
@@ -45,7 +46,7 @@
             #parse("login-error.vm")
 
             <form action="$flowExecutionUrl" method="post">
-
+            #parse("csrf/csrf.vm")
             #set ($serviceName = $rpUIContext.serviceName)
             #if ($serviceName && !$rpContext.getRelyingPartyId().contains($serviceName))
               <legend>
@@ -57,22 +58,27 @@
               <div class="form-element-wrapper">
                 <label for="username">#springMessageText("idp.login.username", "Username")</label>
                 <input class="form-element form-field" id="username" name="j_username" type="text"
-                	value="#if($username)$encoder.encodeForHTML($username)#end">
+                    value="#if($username)$encoder.encodeForHTML($username)#end" />
               </div>
 
               <div class="form-element-wrapper">
                 <label for="password">#springMessageText("idp.login.password", "Password")</label>
-                <input class="form-element form-field" id="password" name="j_password" type="password" value="">
+                <input class="form-element form-field" id="password" name="j_password" type="password" value="" />
               </div>
 
+              ## You may need to modify this to taste, such as changing the flow name its checking for to authn/MFA.
+              #if (!$authenticationContext.getActiveResults().containsKey('authn/Password'))
               <div class="form-element-wrapper">
-                <input type="checkbox" name="donotcache" value="1"> #springMessageText("idp.login.donotcache", "Don't Remember Login")
-              </div>
+                <input type="checkbox" name="donotcache" value="1" id="donotcache">
+                <label for="donotcache">#springMessageText("idp.login.donotcache", "Don't Remember Login")</label>
+               </div>
+              #end
+              
             #end
 
               <div class="form-element-wrapper">
-                <input id="_shib_idp_revokeConsent" type="checkbox" name="_shib_idp_revokeConsent" value="true">
-                #springMessageText("idp.attribute-release.revoke", "Clear prior granting of permission for release of your information to this service.")
+                <input id="_shib_idp_revokeConsent" type="checkbox" name="_shib_idp_revokeConsent" value="true" />
+                <label for="_shib_idp_revokeConsent">#springMessageText("idp.attribute-release.revoke", "Clear prior granting of permission for release of your information to this service.")</label>
               </div>
 
             #if ($passwordEnabled)
@@ -84,7 +90,7 @@
             #end
 
             #foreach ($extFlow in $extendedAuthenticationFlows)
-              #if ($authenticationContext.isAcceptable($extFlow) and $extFlow.apply(profileRequestContext))
+              #if ($authenticationContext.isAcceptable($extFlow) and $extFlow.test(profileRequestContext))
                 <div class="form-element-wrapper">
                   <button class="form-element form-button" type="submit" name="_eventId_$extFlow.getId()">
                     #springMessageText("idp.login.$extFlow.getId().replace('authn/','')", $extFlow.getId().replace('authn/',''))
@@ -94,7 +100,7 @@
             #end
             </form>
 
-			#*
+            #*
               //
               //    SP Description & Logo (optional)
               //    These idpui lines will display added information (if available
@@ -119,9 +125,9 @@
           <div class="column two">
             <ul class="list list-help">
               #if ($passwordEnabled)
-                <li class="list-help-item"><a href="#springMessageText("idp.url.password.reset", "#")"><span class="item-marker">&rsaquo;</span> #springMessageText("idp.login.forgotPassword", "Forgot your password?")</a></li>
+                <li class="list-help-item"><a href="#springMessageText("idp.url.password.reset", '#')"><span class="item-marker">&rsaquo;</span> #springMessageText("idp.login.forgotPassword", "Forgot your password?")</a></li>
               #end
-              <li class="list-help-item"><a href="#springMessageText("idp.url.helpdesk", "#")"><span class="item-marker">&rsaquo;</span> #springMessageText("idp.login.needHelp", "Need Help?")</a></li>
+              <li class="list-help-item"><a href="#springMessageText("idp.url.helpdesk", '#')"><span class="item-marker">&rsaquo;</span> #springMessageText("idp.login.needHelp", "Need Help?")</a></li>
             </ul>
           </div>
         </div>
@@ -134,5 +140,5 @@
       </footer>
     </div>
     
- 	</body>
+     </body>
 </html>

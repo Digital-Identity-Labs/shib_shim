@@ -41,9 +41,11 @@ namespace :demo do
   task :provision => ["rake:build"] do
     lib_dir = "demo/idp/optfs/shibboleth-idp/edit-webapp/WEB-INF/lib"
     mkdir_p lib_dir
+    sh "rm -f #{lib_dir}/*"
     sh "cp target/shabti-shim.jar  #{lib_dir}"
     sh "cp target/heck/jedis*.jar  #{lib_dir}"
-    sh "cp target/heck/commons*.jar  #{lib_dir}"
+    #sh "cp target/heck/commons*.jar  #{lib_dir}"
+    sh "cp target/heck/jackson-datatype-joda-2.12.2.jar  #{lib_dir}"
   end
 
   desc "Regenerate certificates"
